@@ -18,9 +18,16 @@ func home(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// init slice containing paths to template files
+	files := []string{
+		"./ui/html/base.tmpl.html",
+		"./ui/html/partials/nav.tmpl.html",
+		"./ui/html/pages/home.tmpl.html",
+	}
+
 	// use template.ParseFiles() function to read template file
 	// or return 500 error
-	ts, err := template.ParseFiles("./ui/html/pages/home.tmpl.html")
+	ts, err := template.ParseFiles(files...)
 	if err != nil {
 		log.Print(err.Error())
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
@@ -29,7 +36,7 @@ func home(w http.ResponseWriter, r *http.Request) {
 
 	// Execute() on template set to write the template as response
 	// body. Last param is dynamic data.
-	err = ts.Execute(w, nil)
+	err = ts.ExecuteTemplate(w, "base", nil)
 	if err != nil {
 		log.Print(err.Error())
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
