@@ -1,8 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 )
 
 func home(w http.ResponseWriter, r *http.Request) {
@@ -18,12 +20,19 @@ func home(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("Hello from slopshop"))
 }
 
-// Add snippetView handler function
 func snippetView(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("display a specific snippet..."))
+	// get value of id paramter from query string, try to convert
+	// to int. If cannot convert or value is less than 1, return 404
+	id, err := strconv.Atoi(r.URL.Query().Get("id"))
+	if err != nil || id < 1 {
+		http.NotFound(w, r)
+		return
+	}
+
+	// use fmt.Fprintf() to interpolate id value with response
+	fmt.Fprintf(w, "Display a specific snippet with ID %d...", id)
 }
 
-// Add a snippetCreate handler
 func snippetCreate(w http.ResponseWriter, r *http.Request) {
 	// use r.Method to check if request is using POST
 	if r.Method != "POST" {
