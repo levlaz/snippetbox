@@ -5,10 +5,16 @@ import (
 	"net/http"
 )
 
-// define home handler function which writes
-// a byte slice containing hello from slopshop
-// as response body
 func home(w http.ResponseWriter, r *http.Request) {
+	// check if current request URL path exactly matches "/".
+	// if not, use http.NotFound() function to send 404.
+	// we need to do this because my default servemux treates
+	// subtree paths as catch-alls
+	if r.URL.Path != "/" {
+		http.NotFound(w, r)
+		return
+	}
+
 	w.Write([]byte("Hello from slopshop"))
 }
 
