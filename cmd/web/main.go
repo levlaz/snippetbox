@@ -1,11 +1,18 @@
 package main
 
 import (
+	"flag"
 	"log"
 	"net/http"
 )
 
 func main() {
+	// define command line flags
+	addr := flag.String("addr", ":4000", "HTTP network address")
+
+	// parse all command line flags
+	flag.Parse()
+
 	mux := http.NewServeMux()
 
 	// create file server to serve files out of "./ui/static" dir
@@ -21,10 +28,10 @@ func main() {
 	mux.HandleFunc("/snippet/view", snippetView)
 	mux.HandleFunc("/snippet/create", snippetCreate)
 
-	log.Print("starting server on http://localhost:4000")
+	log.Printf("starting server on http://localhost%s", *addr)
 
 	// use http.ListenAndServe() func to start web server.
 	// pass in address and servemux, log error and exit.
-	err := http.ListenAndServe(":4000", mux)
+	err := http.ListenAndServe(*addr, mux)
 	log.Fatal(err)
 }
