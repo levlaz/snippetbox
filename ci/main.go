@@ -13,6 +13,9 @@ type Ci struct {
 func (m *Ci) initBaseImage() {
 	if m.Ctr == nil {
 		m.Ctr = dag.Container().From("golang:alpine").
+			WithMountedCache("/go/pkg/mod", dag.CacheVolume("snippetbox-go-mod")).
+			WithMountedCache("/go/build-cache", dag.CacheVolume("snippetbox-go-build")).
+			WithEnvVariable("GOCACHE", "/go/build-cache").
 			WithExec([]string{"apk", "add", "tree"})
 	}
 }
@@ -45,7 +48,7 @@ func (m *Ci) Serve(dir *Directory) *Service {
 	}
 
 	return ci.Ctr.
-		WithMountedDirectory("/src", ci.Dir).
+		WithDirectory("/src", ci.Dir).
 		WithWorkdir("/src").
 		WithExposedPort(4000).
 		WithEnvVariable("CACHEBUSTER", time.Now().String()).

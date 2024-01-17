@@ -8,4 +8,4 @@ ci:
 
 # serve site on localhost:4000
 serve:
-    dagger up -m ci --port 4000:4000 serve --dir=.
+    dagger up --focus=false -m ci --port 4000:4000 serve --dir=.
