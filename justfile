@@ -9,3 +9,11 @@ ci:
 # serve site on localhost:4000
 serve:
     dagger up --focus=false -m ci --port 4000:4000 serve --dir=.
+
+# run ci with empty commit 
+empty: 
+    git commit --allow-empty -m 'trigger ci' && git push
+
+# push to gitlab
+gitlab: 
+    git push -u gitlab main
