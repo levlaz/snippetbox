@@ -1,0 +1,22 @@
+.docker:
+  image: golang:alpine
+  services:
+    - docker:${DOCKER_VERSION}-dind
+  variables:
+    DOCKER_HOST: tcp://docker:2376
+    DOCKER_TLS_VERIFY: '1'
+    DOCKER_TLS_CERTDIR: '/certs'
+    DOCKER_CERT_PATH: '/certs/client'
+    DOCKER_DRIVER: overlay2
+    DOCKER_VERSION: '20.10.16'
+    DAGGER_CLOUD_TOKEN: $DAGGER_CLOUD_TOKEN
+.dagger:
+  extends: [.docker]
+  before_script:
+    - apk add docker-cli curl
+    - cd /usr/local && { curl -L https://dl.dagger.io/dagger/install.sh | sh; cd -; }
+build:
+  extends: [.dagger]
+  script:
+    - dagger call -m ci ci --dir .
+    - docker stop -t 300 $(docker ps --filter name="dagger-engine-*" -q)
