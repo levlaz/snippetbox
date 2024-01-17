@@ -31,6 +31,7 @@ func (m *Ci) Ci(ctx context.Context, dir *Directory) string {
 	}
 
 	output, _ := ci.Ctr.
+		WithEnvVariable("CACHEBUSTER", time.Now().String()).
 		WithExec([]string{"echo", "it works!"}).
 		Stdout(ctx)
 
