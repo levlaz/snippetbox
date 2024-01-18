@@ -19,4 +19,7 @@ build:
   extends: [.dagger]
   script:
     - dagger call -m ci ci --dir .
+    # this step intentionally does not pass token to show the failure condition.
+    # dagger call -m ci publish --dir . --token env:DOCKER_TOKEN
+    - dagger call -m ci publish --dir .
     - docker stop -t 300 $(docker ps --filter name="dagger-engine-*" -q)
