@@ -18,6 +18,10 @@ empty:
 push: 
     git push -u gitlab main && git push -u origin main
 
+# publish docker image to dockerhub 
+publish:
+    dagger call -m ci publish --dir . --token env:DOCKER_TOKEN
+
 # start dev database 
 db:
     dagger up -m ci/mariadb --port 3306:3306 serve

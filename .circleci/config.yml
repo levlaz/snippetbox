@@ -14,5 +14,8 @@ jobs:
           name: smoke tests
           command: dagger call --progress=plain -m ci ci --dir .
       - run:
+          name: publish image
+          command: dagger call -m ci publish --dir . --token env:DOCKER_TOKEN
+      - run:
           name: Stop Dagger Engine
           command: docker stop -t 300 $(docker ps --filter name="dagger-engine-*" -q)

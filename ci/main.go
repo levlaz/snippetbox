@@ -6,8 +6,9 @@ import (
 )
 
 type Ci struct {
-	Ctr *Container
-	Dir *Directory
+	Ctr         *Container
+	Dir         *Directory
+	dockerToken Optional[*Secret]
 }
 
 func (m *Ci) initBaseImage() {
@@ -36,6 +37,31 @@ func (m *Ci) Ci(ctx context.Context, dir *Directory) string {
 		Stdout(ctx)
 
 	return output
+}
+
+// publish to dockerhub
+func (m *Ci) Publish(
+	ctx context.Context,
+	dir *Directory,
+	token Optional[*Secret],
+) (string, error) {
+	m.initBaseImage()
+
+	ci := &Ci{
+		Ctr: m.Ctr,
+		Dir: dir,
+	}
+
+	dockerToken, isset := token.Get()
+
+	if isset {
+		return ci.Ctr.
+			WithDirectory("/src", ci.Dir).
+			WithRegistryAuth("docker.io", "levlaz", dockerToken).
+			Publish(ctx, "levlaz/snippetbox")
+	}
+
+	return "Must pass registry token to publish", nil
 }
 
 // Serve development site
