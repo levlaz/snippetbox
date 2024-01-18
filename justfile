@@ -17,3 +17,21 @@ empty:
 # push to gitlab
 push: 
     git push -u gitlab main && git push -u origin main
+
+# start dev database 
+db:
+    dagger up -m ci/mariadb --port 3306:3306 serve
+
+# init database 
+init-db: 
+    mysql -h 127.0.0.1 -u root < internal/db/init.sql
+
+# you can pass this in yourself too by running
+# just mysql < internal/db/seed.sql
+# seed db
+seed-db:
+    mysql -h 127.0.0.1 -u root < internal/db/seed.sql
+
+# start mysql-client with snippetbox database 
+mysql: 
+    mysql -h 127.0.0.1 -u root snippetbox
