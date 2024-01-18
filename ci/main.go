@@ -58,10 +58,20 @@ func (m *Ci) Publish(
 	gitCommit := commit.GetOr("latest")
 
 	if isset {
-		return ci.Ctr.
+
+		tags := [2]string{"latest", gitCommit}
+
+		ctr := ci.Ctr.
 			WithDirectory("/src", ci.Dir).
-			WithRegistryAuth("docker.io", "levlaz", dockerToken).
-			Publish(ctx, fmt.Sprintf("levlaz/snippetbox:%s", gitCommit))
+			WithRegistryAuth("docker.io", "levlaz", dockerToken)
+
+		for _, tag := range tags {
+			addr, err := ctr.Publish(ctx, fmt.Sprintf("levlaz/snippetbox:%s", tag))
+			if err != nil {
+				panic(err)
+			}
+			fmt.Println("Published: ", addr)
+		}
 	}
 
 	return "Must pass registry token to publish", nil

@@ -21,7 +21,7 @@ jobs:
       # this step intentionally does not pass token to show the failure condition.
       # dagger call -m ci publish --dir . --token env:DOCKER_TOKEN
       - name: Publish Docker Image to Registry
-        run: dagger call -m ci publish --dir . --commit env:GITHUB_SHA
+        run: dagger call -m ci publish --dir . --commit $GITHUB_SHA
         env:
            DAGGER_CLOUD_TOKEN: ${{ secrets.DAGGER_CLOUD_TOKEN }}
       - name: Stop Engine
