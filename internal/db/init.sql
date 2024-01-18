@@ -12,6 +12,6 @@ CREATE TABLE IF NOT EXISTS snippets (
 
 CREATE INDEX IF NOT EXISTS idx_snippets_created ON snippets(created);
 
--- do this at some point, but does not make sense for local dev, connecting as root is fine. 
+-- TODO do this at some point, but does not make sense for local dev, connecting as root is fine. 
 -- CREATE USER IF NOT EXISTS 'web'@'localhost' IDENTIFIED BY 'super-secure-password';
 -- GRANT SELECT, INSERT, UPDATE, DELETE ON snippetbox.* TO 'web'@'localhost';

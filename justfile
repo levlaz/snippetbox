@@ -14,7 +14,7 @@ serve:
 empty: 
     git commit --allow-empty -m 'trigger ci' && git push
 
-# push to gitlab
+# push to all remotes
 push: 
     git push -u gitlab main && git push -u origin main
 
