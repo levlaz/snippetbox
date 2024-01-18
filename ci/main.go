@@ -72,6 +72,8 @@ func (m *Ci) Publish(
 			}
 			fmt.Println("Published: ", addr)
 		}
+
+		return fmt.Sprintf("Published: %s", tags), nil
 	}
 
 	return "Must pass registry token to publish", nil
