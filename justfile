@@ -30,7 +30,7 @@ init-db:
 # just mysql < internal/db/seed.sql
 # seed db
 seed-db:
-    mysql -h 127.0.0.1 -u root < internal/db/seed.sql
+    mysql -h 127.0.0.1 -u root snippetbox < internal/db/seed.sql
 
 # start mysql-client with snippetbox database 
 mysql: 
