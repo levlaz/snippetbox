@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"time"
 )
 
@@ -44,6 +45,7 @@ func (m *Ci) Publish(
 	ctx context.Context,
 	dir *Directory,
 	token Optional[*Secret],
+	commit Optional[string],
 ) (string, error) {
 	m.initBaseImage()
 
@@ -53,12 +55,13 @@ func (m *Ci) Publish(
 	}
 
 	dockerToken, isset := token.Get()
+	gitCommit := commit.GetOr("latest")
 
 	if isset {
 		return ci.Ctr.
 			WithDirectory("/src", ci.Dir).
 			WithRegistryAuth("docker.io", "levlaz", dockerToken).
-			Publish(ctx, "levlaz/snippetbox")
+			Publish(ctx, fmt.Sprintf("levlaz/snippetbox:%s", gitCommit))
 	}
 
 	return "Must pass registry token to publish", nil
