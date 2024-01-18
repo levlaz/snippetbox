@@ -15,5 +15,5 @@ empty:
     git commit --allow-empty -m 'trigger ci' && git push
 
 # push to gitlab
-gitlab: 
-    git push -u gitlab main
+push: 
+    git push -u gitlab main && git push -u origin main

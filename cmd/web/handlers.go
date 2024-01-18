@@ -13,7 +13,7 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 	// we need to do this because my default servemux treates
 	// subtree paths as catch-alls
 	if r.URL.Path != "/" {
-		http.NotFound(w, r)
+		app.notFound(w)
 		return
 	}
 
@@ -29,7 +29,7 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 	ts, err := template.ParseFiles(files...)
 	if err != nil {
 		app.logger.Error(err.Error(), "method", r.Method, "uri", r.URL.RequestURI())
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		app.serverError(w, r, err)
 		return
 	}
 
@@ -38,7 +38,7 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 	err = ts.ExecuteTemplate(w, "base", nil)
 	if err != nil {
 		app.logger.Error(err.Error(), "method", r.Method, "uri", r.URL.RequestURI())
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		app.serverError(w, r, err)
 	}
 }
 
@@ -47,7 +47,7 @@ func (app *application) snippetView(w http.ResponseWriter, r *http.Request) {
 	// to int. If cannot convert or value is less than 1, return 404
 	id, err := strconv.Atoi(r.URL.Query().Get("id"))
 	if err != nil || id < 1 {
-		http.NotFound(w, r)
+		app.notFound(w)
 		return
 	}
 
@@ -63,7 +63,7 @@ func (app *application) snippetCreate(w http.ResponseWriter, r *http.Request) {
 
 		// use http.Error() function to send 405 and
 		// method not allowed
-		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		app.clientError(w, http.StatusMethodNotAllowed)
 		return
 	}
 	w.Write([]byte("Create a new snippet..."))
