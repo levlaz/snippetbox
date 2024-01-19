@@ -18,7 +18,8 @@ func (m *Ci) initBaseImage() {
 			WithMountedCache("/go/pkg/mod", dag.CacheVolume("snippetbox-go-mod")).
 			WithMountedCache("/go/build-cache", dag.CacheVolume("snippetbox-go-build")).
 			WithEnvVariable("GOCACHE", "/go/build-cache").
-			WithExec([]string{"apk", "add", "tree"})
+			WithExec([]string{"apk", "add", "tree"}).
+			WithExec([]string{"apk", "add", "mysql-client"})
 	}
 }
 
@@ -89,13 +90,19 @@ func (m *Ci) Serve(dir *Directory) *Service {
 		Dir: dir,
 	}
 
+	mariadb := dag.Container().
+		From("mariadb:latest").
+		WithEnvVariable("MARIADB_ALLOW_EMPTY_ROOT_PASSWORD", "1").
+		WithExposedPort(3306).
+		AsService()
+
 	return ci.Ctr.
+		WithServiceBinding("db", mariadb).
 		WithDirectory("/src", ci.Dir).
 		WithWorkdir("/src").
 		WithExposedPort(4000).
 		WithEnvVariable("CACHEBUSTER", time.Now().String()).
-		WithExec([]string{"pwd"}).
-		WithExec([]string{"tree"}).
-		WithExec([]string{"go", "run", "./cmd/web"}).
+		WithExec([]string{"sh", "-c", "mysql -h db -u root < internal/db/init.sql"}).
+		WithExec([]string{"go", "run", "./cmd/web", "--dsn", "web:pass@tcp(db)/snippetbox?parseTime=true"}).
 		AsService()
 }

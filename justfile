@@ -20,7 +20,7 @@ push:
 
 # publish docker image to dockerhub 
 publish:
-    dagger call -m ci publish --dir . --token env:DOCKER_TOKEN
+    dagger call -m ci publish --dir . --token env:DOCKER_TOKEN --commit $(git rev-parse HEAD)
 
 # start dev database 
 db:

@@ -47,6 +47,7 @@ func (app *application) snippetView(w http.ResponseWriter, r *http.Request) {
 	// to int. If cannot convert or value is less than 1, return 404
 	id, err := strconv.Atoi(r.URL.Query().Get("id"))
 	if err != nil || id < 1 {
+		app.logger.Debug(r.URL.RawQuery)
 		app.notFound(w)
 		return
 	}
@@ -57,7 +58,7 @@ func (app *application) snippetView(w http.ResponseWriter, r *http.Request) {
 
 func (app *application) snippetCreate(w http.ResponseWriter, r *http.Request) {
 	// use r.Method to check if request is using POST
-	if r.Method != "POST" {
+	if r.Method != http.MethodPost {
 		// let client know which methods are allowed
 		w.Header().Set("Allow", http.MethodPost)
 
@@ -66,5 +67,16 @@ func (app *application) snippetCreate(w http.ResponseWriter, r *http.Request) {
 		app.clientError(w, http.StatusMethodNotAllowed)
 		return
 	}
-	w.Write([]byte("Create a new snippet..."))
+
+	title := "0 snail"
+	content := "O snail\nClimb Mount Fuji,\nBut slowly, slowly!\n\n– Kobayashi Issa"
+	expires := 7
+
+	id, err := app.snippets.Insert(title, content, expires)
+	if err != nil {
+		app.serverError(w, r, err)
+		return
+	}
+
+	http.Redirect(w, r, fmt.Sprintf("/snippet/view?id=%d", id), http.StatusSeeOther)
 }
