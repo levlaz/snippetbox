@@ -2,6 +2,7 @@ package models
 
 import (
 	"database/sql"
+	"errors"
 	"time"
 )
 
@@ -21,6 +22,7 @@ type SnippetModel struct {
 
 // insert new snippet into DB
 func (m *SnippetModel) Insert(title string, content string, expires int) (int, error) {
+	// keep in mind this statement depends on db as well, postgres will use $N instead of ?
 	query := `INSERT INTO snippets (title, content, created, expires)
 	VALUES(?, ?, UTC_TIMESTAMP(), DATE_ADD(UTC_TIMESTAMP(), INTERVAL ? DAY))`
 
@@ -40,7 +42,23 @@ func (m *SnippetModel) Insert(title string, content string, expires int) (int, e
 
 // get snippet by ID
 func (m *SnippetModel) Get(id int) (Snippet, error) {
-	return Snippet{}, nil
+	query := `SELECT id, title, content, created, expires FROM snippets 
+	WHERE expires > UTC_TIMESTAMP() AND id = ?`
+
+	row := m.DB.QueryRow(query, id)
+
+	var s Snippet
+
+	err := row.Scan(&s.ID, &s.Title, &s.Content, &s.Created, &s.Expires)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return Snippet{}, ErrNoRecord
+		} else {
+			return Snippet{}, err
+		}
+	}
+
+	return s, nil
 }
 
 // Return 10 most recently created snippets
