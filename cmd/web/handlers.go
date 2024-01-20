@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
-	"text/template"
 
 	"snippetbox.levlaz.org/internal/models"
 )
@@ -20,29 +19,39 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// init slice containing paths to template files
-	files := []string{
-		"./ui/html/base.tmpl.html",
-		"./ui/html/partials/nav.tmpl.html",
-		"./ui/html/pages/home.tmpl.html",
-	}
-
-	// use template.ParseFiles() function to read template file
-	// or return 500 error
-	ts, err := template.ParseFiles(files...)
+	snippets, err := app.snippets.Latest()
 	if err != nil {
-		app.logger.Error(err.Error(), "method", r.Method, "uri", r.URL.RequestURI())
 		app.serverError(w, r, err)
 		return
 	}
 
-	// Execute() on template set to write the template as response
-	// body. Last param is dynamic data.
-	err = ts.ExecuteTemplate(w, "base", nil)
-	if err != nil {
-		app.logger.Error(err.Error(), "method", r.Method, "uri", r.URL.RequestURI())
-		app.serverError(w, r, err)
+	for _, snippet := range snippets {
+		fmt.Fprintf(w, "%v\n", snippet)
 	}
+
+	// // init slice containing paths to template files
+	// files := []string{
+	// 	"./ui/html/base.tmpl.html",
+	// 	"./ui/html/partials/nav.tmpl.html",
+	// 	"./ui/html/pages/home.tmpl.html",
+	// }
+
+	// // use template.ParseFiles() function to read template file
+	// // or return 500 error
+	// ts, err := template.ParseFiles(files...)
+	// if err != nil {
+	// 	app.logger.Error(err.Error(), "method", r.Method, "uri", r.URL.RequestURI())
+	// 	app.serverError(w, r, err)
+	// 	return
+	// }
+
+	// // Execute() on template set to write the template as response
+	// // body. Last param is dynamic data.
+	// err = ts.ExecuteTemplate(w, "base", nil)
+	// if err != nil {
+	// 	app.logger.Error(err.Error(), "method", r.Method, "uri", r.URL.RequestURI())
+	// 	app.serverError(w, r, err)
+	// }
 }
 
 func (app *application) snippetView(w http.ResponseWriter, r *http.Request) {

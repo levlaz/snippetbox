@@ -23,9 +23,8 @@ func (m *Ci) initBaseImage() {
 	}
 }
 
-// Run entire CI pipeline
-// example usage: "dagger call -m ci ci --dir ."
-func (m *Ci) Ci(ctx context.Context, dir *Directory) string {
+// Run test suite
+func (m *Ci) Test(ctx context.Context, dir *Directory) (string, error) {
 	m.initBaseImage()
 
 	ci := &Ci{
@@ -33,10 +32,43 @@ func (m *Ci) Ci(ctx context.Context, dir *Directory) string {
 		Dir: dir,
 	}
 
-	output, _ := ci.Ctr.
-		WithEnvVariable("CACHEBUSTER", time.Now().String()).
-		WithExec([]string{"echo", "it works!"}).
+	return ci.Ctr.
+		WithDirectory("/src", ci.Dir).
+		WithWorkdir("/src").
+		WithExec([]string{"go", "test", "./cmd/web"}).
 		Stdout(ctx)
+}
+
+// Run entire CI pipeline
+// example usage: "dagger call -m ci ci --dir ."
+func (m *Ci) Ci(
+	ctx context.Context,
+	dir *Directory,
+	token Optional[*Secret],
+	commit Optional[string],
+) string {
+	m.initBaseImage()
+
+	ci := &Ci{
+		Ctr: m.Ctr,
+		Dir: dir,
+	}
+
+	var output string
+
+	// run tests
+	testOutput, err := m.Test(ctx, ci.Dir)
+	if err != nil {
+		return fmt.Sprint(err)
+	}
+	output = output + "\n" + testOutput
+
+	// publish container
+	publishOutput, err := m.Publish(ctx, dir, token, commit)
+	if err != nil {
+		return fmt.Sprint(err)
+	}
+	output = output + "\n" + publishOutput
 
 	return output
 }
