@@ -1,4 +1,8 @@
 {
   "name": "ci",
-  "sdk": "go"
+  "sdk": "go",
+  "dependencies": [
+    "github.com/levlaz/daggerverse/mariadb@cb25b8fb580c6df6f3a68da649dcfd90a67048e4",
+    "github.com/sagikazarmark/daggerverse/golangci-lint@20e8626c9f25d570e6321765d496643736d76ee5"
+  ]
 }

@@ -122,19 +122,14 @@ func (m *Ci) Serve(dir *Directory) *Service {
 		Dir: dir,
 	}
 
-	mariadb := dag.Container().
-		From("mariadb:latest").
-		WithEnvVariable("MARIADB_ALLOW_EMPTY_ROOT_PASSWORD", "1").
-		WithExposedPort(3306).
-		AsService()
-
 	return ci.Ctr.
-		WithServiceBinding("db", mariadb).
+		WithServiceBinding("db", dag.Mariadb().Serve()).
 		WithDirectory("/src", ci.Dir).
 		WithWorkdir("/src").
 		WithExposedPort(4000).
 		WithEnvVariable("CACHEBUSTER", time.Now().String()).
 		WithExec([]string{"sh", "-c", "mysql -h db -u root < internal/db/init.sql"}).
+		WithExec([]string{"sh", "-c", "mysql -h db -u root snippetbox < internal/db/seed.sql"}).
 		WithExec([]string{"go", "run", "./cmd/web", "--dsn", "web:pass@tcp(db)/snippetbox?parseTime=true"}).
 		AsService()
 }
