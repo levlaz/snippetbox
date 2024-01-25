@@ -1,0 +1,21 @@
+image: ubuntu/lts  
+secrets: 
+  - 234d6ffa-82da-445b-ab32-8b388c51da4d
+shell: true
+tasks:
+  - install_docker: |
+      sudo apt update
+      curl -fsSL https://get.docker.com -o get-docker.sh
+      sudo sh ./get-docker.sh
+      sudo usermod -aG docker $USER
+  - install_dagger: |
+      cd /usr/local && { curl -L https://dl.dagger.io/dagger/install.sh | sudo sh; cd -; }
+  - add_secret_to_env: |
+      cat << EOF >> .buildenv
+      export DAGGER_CLOUD_TOKEN=$(cat ~/.dagger_cloud_token)
+      EOF
+  - run_dagger: |
+      cd dagger-demo
+      dagger call --progress=plain -m ci ci --dir .
+  - stop_dagger_engine: |
+      docker stop -t 300 $(docker ps --filter name="dagger-engine-*" -q)

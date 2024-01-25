@@ -16,7 +16,7 @@ empty:
 
 # push to all remotes
 push: 
-    git push -u gitlab main && git push -u origin main
+    git push gitlab main && git push origin main && git push sourcehut main
 
 # publish docker image to dockerhub 
 publish:
