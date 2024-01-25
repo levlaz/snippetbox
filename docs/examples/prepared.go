@@ -1,4 +1,4 @@
-package examples
+package examples //noqa
 
 import (
 	"database/sql"
