@@ -15,7 +15,7 @@ tasks:
       export DAGGER_CLOUD_TOKEN=$(cat ~/.dagger_cloud_token)
       EOF
   - run_dagger: |
-      cd dagger-demo
+      cd snippetbox
       dagger call --progress=plain -m ci ci --dir .
   - stop_dagger_engine: |
       docker stop -t 300 $(docker ps --filter name="dagger-engine-*" -q)
