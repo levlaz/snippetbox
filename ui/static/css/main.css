@@ -7,8 +7,38 @@ body {
     font-size: x-large;
 }
 
-header, nav, main, footer {
+header,
+nav,
+main,
+footer {
     border: solid 1px black;
     padding: 10px;
     margin: 10px;
+}
+
+table,
+th,
+td {
+    border: solid 1px gray;
+}
+
+th,
+td {
+    text-align: left;
+    padding: 5px;
+}
+
+th {
+    background-color: black;
+    color: white;
+    text-align: center;
+}
+
+tr,
+td {
+    padding: 25px;
+}
+
+tr:nth-child(even) {
+    background-color: lightgray;
 }
