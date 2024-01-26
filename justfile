@@ -24,7 +24,7 @@ publish:
 
 # start dev database 
 db:
-    dagger up -m ci/mariadb --port 3306:3306 serve
+    dagger up -m github.com/levlaz/daggerverse/mariadb --port 3306:3306 serve
 
 # init database 
 init-db: 
@@ -39,3 +39,7 @@ seed-db:
 # start mysql-client with snippetbox database 
 mysql: 
     mysql -h 127.0.0.1 -u root snippetbox
+
+# run go locally 
+run:
+    go run ./cmd/web
