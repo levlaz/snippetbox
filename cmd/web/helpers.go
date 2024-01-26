@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"runtime/debug"
+	"time"
 )
 
 // serverError helper writes log entry at Error level
@@ -55,4 +56,11 @@ func (app *application) render(w http.ResponseWriter, r *http.Request, status in
 	w.WriteHeader(status)
 
 	buf.WriteTo(w)
+}
+
+// return pointer to templateData struct initialized with the current year
+func (app *application) newTemplateData(r *http.Request) templateData {
+	return templateData{
+		CurrentYear: time.Now().Year(),
+	}
 }
