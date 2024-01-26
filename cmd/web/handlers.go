@@ -6,19 +6,11 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/julienschmidt/httprouter"
 	"snippetbox.levlaz.org/internal/models"
 )
 
 func (app *application) home(w http.ResponseWriter, r *http.Request) {
-	// check if current request URL path exactly matches "/".
-	// if not, use http.NotFound() function to send 404.
-	// we need to do this because my default servemux treates
-	// subtree paths as catch-alls
-	if r.URL.Path != "/" {
-		app.notFound(w)
-		return
-	}
-
 	snippets, err := app.snippets.Latest()
 	if err != nil {
 		app.serverError(w, r, err)
@@ -33,9 +25,9 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *application) snippetView(w http.ResponseWriter, r *http.Request) {
-	// get value of id paramter from query string, try to convert
-	// to int. If cannot convert or value is less than 1, return 404
-	id, err := strconv.Atoi(r.URL.Query().Get("id"))
+	params := httprouter.ParamsFromContext(r.Context())
+
+	id, err := strconv.Atoi(params.ByName("id"))
 	if err != nil || id < 1 {
 		app.notFound(w)
 		return
@@ -58,17 +50,10 @@ func (app *application) snippetView(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *application) snippetCreate(w http.ResponseWriter, r *http.Request) {
-	// use r.Method to check if request is using POST
-	if r.Method != http.MethodPost {
-		// let client know which methods are allowed
-		w.Header().Set("Allow", http.MethodPost)
+	w.Write([]byte("Display the form for creating a new snippet..."))
+}
 
-		// use http.Error() function to send 405 and
-		// method not allowed
-		app.clientError(w, http.StatusMethodNotAllowed)
-		return
-	}
-
+func (app *application) snippetCreatePost(w http.ResponseWriter, r *http.Request) {
 	title := "0 snail"
 	content := "O snail\nClimb Mount Fuji,\nBut slowly, slowly!\n\n– Kobayashi Issa"
 	expires := 7
