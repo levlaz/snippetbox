@@ -1,0 +1,20 @@
+{
+  "name": "ci",
+  "sdk": "go",
+  "dependencies": [
+    {
+      "name": "golang",
+      "source": "github.com/kpenfound/dagger-modules/golang@4c9d04b461f9e0fce3ff40399570f635f586d972"
+    },
+    {
+      "name": "golangci-lint",
+      "source": "github.com/sagikazarmark/daggerverse/golangci-lint@20e8626c9f25d570e6321765d496643736d76ee5"
+    },
+    {
+      "name": "mariadb",
+      "source": "github.com/levlaz/daggerverse/mariadb@cb25b8fb580c6df6f3a68da649dcfd90a67048e4"
+    }
+  ],
+  "source": "ci",
+  "engineVersion": "v0.10.2"
+}
