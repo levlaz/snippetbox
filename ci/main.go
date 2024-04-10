@@ -18,19 +18,16 @@ func (m *Ci) base() *Container {
 }
 
 // Lint
-func (m *Ci) Lint(ctx context.Context, dir *Directory) (string, error) {
-	return dag.Golang().
-		WithProject(dir).
-		GolangciLint(ctx)
+func (m *Ci) Lint(ctx context.Context, dir *Directory) *Container {
+	return dag.GolangciLint().Run(dir)
 }
 
 // Run test suite
-func (m *Ci) Test(ctx context.Context, dir *Directory) (string, error) {
+func (m *Ci) Test(ctx context.Context, dir *Directory) *Container {
 	return m.base().
 		WithDirectory("/src", dir).
 		WithWorkdir("/src").
-		WithExec([]string{"go", "test", "./cmd/web"}).
-		Stdout(ctx)
+		WithExec([]string{"go", "test", "./cmd/web"})
 }
 
 // Run entire CI pipeline
@@ -48,14 +45,14 @@ func (m *Ci) Ci(
 	var output string
 
 	// run linter
-	lintOutput, err := m.Lint(ctx, dir)
+	lintOutput, err := m.Lint(ctx, dir).Stdout(ctx)
 	if err != nil {
 		fmt.Sprint(err)
 	}
 	output = output + "\n" + lintOutput
 
 	// run tests
-	testOutput, err := m.Test(ctx, dir)
+	testOutput, err := m.Test(ctx, dir).Stdout(ctx)
 	if err != nil {
 		fmt.Sprint(err)
 	}
@@ -119,4 +116,16 @@ func (m *Ci) Debug(dir *Directory) *Container {
 		WithServiceBinding("db", dag.Mariadb().Serve()).
 		WithDirectory("/src", dir).
 		WithWorkdir("/src")
+}
+
+// Get Private Container
+func (m *Ci) WithPrivateContainer(
+	// full private image address in the form of [host]/[user]/[repo]:[tag]
+	address string,
+	// registry username
+	username string,
+	// registry token
+	token *Secret,
+) *Container {
+	return dag.Container().WithRegistryAuth(address, username, token)
 }
