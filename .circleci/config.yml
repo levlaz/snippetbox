@@ -12,13 +12,13 @@ jobs:
           command: cd /usr/local && { curl -L https://dl.dagger.io/dagger/install.sh | sudo sh; cd -; }
       - run:
           name: smoke tests
-          command: dagger call --progress=plain -m ci ci --dir .
+          command: dagger call -m ci ci --dir . --env circleci
       - run:
           name: smoke tests again
-          command: dagger call --progress=plain -m ci ci --dir .
+          command: dagger call -m ci ci --dir . --env circleci2ndtime
       - run:
           name: publish image
-          command: dagger call --progress=plain -m ci publish --dir . --token env:DOCKER_TOKEN --commit $CIRCLE_SHA1
+          command: dagger call -m ci publish --dir . --token env:DOCKER_TOKEN --commit $CIRCLE_SHA1
       - run:
           name: Stop Dagger Engine
           command: docker stop -t 300 $(docker ps --filter name="dagger-engine-*" -q)
