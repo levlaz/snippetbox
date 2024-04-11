@@ -14,6 +14,9 @@ jobs:
           name: smoke tests
           command: dagger call --progress=plain -m ci ci --dir .
       - run:
+          name: smoke tests again
+          command: dagger call --progress=plain -m ci ci --dir .
+      - run:
           name: publish image
           command: dagger call --progress=plain -m ci publish --dir . --token env:DOCKER_TOKEN --commit $CIRCLE_SHA1
       - run:
