@@ -40,6 +40,11 @@ func (m *Ci) Ci(
 	// +optional
 	// +default="latest"
 	commit string,
+	// +optional
+	// +default="local"
+	// environment where ci build is running, workaround for dagger cloud not
+	// showing this information yet.
+	env string,
 ) string {
 
 	var output string
@@ -64,6 +69,13 @@ func (m *Ci) Ci(
 		fmt.Sprint(err)
 	}
 	output = output + "\n" + publishOutput
+
+	// get TraceURL
+	traceUrl, err := dag.CloudUtils().TraceURL(ctx)
+	if err != nil {
+		fmt.Sprint(err)
+	}
+	output = output + "\n\nDagger Cloud Trace: " + traceUrl
 
 	return output
 }

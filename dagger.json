@@ -3,6 +3,10 @@
   "sdk": "go",
   "dependencies": [
     {
+      "name": "cloud-utils",
+      "source": "github.com/levlaz/daggerverse/cloud-utils@a46591542fa07c3f2b607a58fc99a69c64bbe2bd"
+    },
+    {
       "name": "golangci-lint",
       "source": "github.com/sagikazarmark/daggerverse/golangci-lint@9a3074edb9cb21746ea2f9dcdd018d520b47f2e6"
     },

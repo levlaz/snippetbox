@@ -16,6 +16,6 @@ tasks:
       EOF
   - run_dagger: |
       cd snippetbox
-      dagger call -m ci ci --dir .
+      dagger call -m ci ci --dir . --env sourcehut
   - stop_dagger_engine: |
       docker stop -t 300 $(docker ps --filter name="dagger-engine-*" -q)
