@@ -55,7 +55,11 @@ func (app *application) render(w http.ResponseWriter, r *http.Request, status in
 
 	w.WriteHeader(status)
 
-	buf.WriteTo(w)
+    _, err = buf.WriteTo(w)
+    if err != nil {
+        app.serverError(w, r, err)
+        return 
+    }
 }
 
 // return pointer to templateData struct initialized with the current year
