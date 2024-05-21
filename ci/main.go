@@ -126,6 +126,7 @@ func (m *Ci) Serve(dir *Directory) *Service {
 func (m *Ci) Debug(dir *Directory) *Container {
 	return m.base().
 		WithServiceBinding("db", dag.Mariadb().Serve()).
+        WithServiceBinding("dragonfly", dag.Dragonfly().Serve()).
 		WithDirectory("/src", dir).
 		WithWorkdir("/src").
 		WithExec([]string{"sh", "-c", "mysql -h db -u root < internal/db/init.sql"}).
