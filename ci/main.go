@@ -122,12 +122,14 @@ func (m *Ci) Serve(dir *Directory) *Service {
 		AsService()
 }
 
-// Debug Build Container
+// Debug build container with MariaDB service attached
 func (m *Ci) Debug(dir *Directory) *Container {
 	return m.base().
 		WithServiceBinding("db", dag.Mariadb().Serve()).
 		WithDirectory("/src", dir).
-		WithWorkdir("/src")
+		WithWorkdir("/src").
+		WithExec([]string{"sh", "-c", "mysql -h db -u root < internal/db/init.sql"}).
+		WithExec([]string{"sh", "-c", "mysql -h db -u root snippetbox < internal/db/seed.sql"})
 }
 
 // Get Private Container
