@@ -3,12 +3,12 @@
   "sdk": "go",
   "dependencies": [
     {
-      "name": "dragonfly",
-      "source": "github.com/levlaz/daggerverse/dragonfly@36bd4f103d1ce334ca95f567a5f1b348f44c12d4"
-    },
-    {
       "name": "cloud-utils",
       "source": "github.com/levlaz/daggerverse/cloud-utils@a46591542fa07c3f2b607a58fc99a69c64bbe2bd"
+    },
+    {
+      "name": "dragonfly",
+      "source": "github.com/levlaz/daggerverse/dragonfly@36bd4f103d1ce334ca95f567a5f1b348f44c12d4"
     },
     {
       "name": "golangci-lint",
