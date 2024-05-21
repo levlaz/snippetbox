@@ -4,7 +4,7 @@ default:
 
 # run ci pipleine
 ci:
-    dagger call -m ci ci --dir .
+    dagger call -m ci ci --dir . --env local 
 
 # serve site on localhost:4000
 serve:
