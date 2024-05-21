@@ -19,7 +19,7 @@ func (m *Ci) base() *Container {
 
 // Lint
 func (m *Ci) Lint(ctx context.Context, dir *Directory) *Container {
-	return dag.GolangciLint().Run(dir)
+ 	return dag.GolangciLint().Run(dir)
 }
 
 // Run test suite
