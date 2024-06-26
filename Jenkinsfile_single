@@ -1,0 +1,41 @@
+pipeline {
+  agent { label 'dagger' }
+
+  // assumes that the Dagger Cloud token
+  // is in a Jenkins credential named DAGGER_CLOUD_TOKEN
+  environment {
+    DAGGER_CLOUD_TOKEN =  credentials('DAGGER_CLOUD_TOKEN')
+  }
+
+  stages {
+    stage("dagger") {
+      steps {
+        checkout ([
+          changelog: false, 
+          poll: false, 
+          scm: scmGit(
+            branches: [[name: '**']], 
+            browser: github('https://github.com/levlaz/snippetbox'), 
+            extensions: [
+              cloneOption(
+                honorRefspec: true, 
+                noTags: true, 
+                reference: '', 
+                shallow: false
+                ), 
+                lfs(), 
+                localBranch('main')
+            ], 
+            userRemoteConfigs: [
+              [
+                url: 'https://github.com/levlaz/snippetbox'
+                ]
+            ])])
+        sh '''
+            curl -L https://dl.dagger.io/dagger/install.sh | BIN_DIR=$HOME/.local/bin sh
+            /var/jenkins_home/.local/bin/dagger call ci --dir .
+        '''
+      }
+    }
+  }
+}
