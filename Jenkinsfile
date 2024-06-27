@@ -7,31 +7,6 @@ pipeline {
   }
 
   stages {
-    stage("checkout") {
-      steps {
-        checkout ([
-          changelog: false, 
-          poll: false, 
-          scm: scmGit(
-            branches: [[name: '**']], 
-            browser: github('https://github.com/levlaz/snippetbox'), 
-            extensions: [
-              cloneOption(
-                honorRefspec: true, 
-                noTags: true, 
-                reference: '', 
-                shallow: false
-                ), 
-                lfs(), 
-                localBranch('main')
-            ], 
-            userRemoteConfigs: [
-              [
-                url: 'https://github.com/levlaz/snippetbox'
-                ]
-            ])])
-      }
-    }
     stage("install dagger") {
       steps {
         sh '''
