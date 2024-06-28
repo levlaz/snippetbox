@@ -2,6 +2,8 @@ pipeline {
   agent { label 'dagger' }
 
   environment {
+    DAGGER_VERSION = "0.11.9"
+    PATH = "/tmp/dagger/bin:$PATH"
     DOCKER_TOKEN = credentials('DOCKER_TOKEN')
     DAGGER_CLOUD_TOKEN =  credentials('DAGGER_CLOUD_TOKEN')
   }
@@ -10,23 +12,25 @@ pipeline {
     stage("install dagger") {
       steps {
         sh '''
-        curl -L https://dl.dagger.io/dagger/install.sh | BIN_DIR=bin sh
+        mkdir -p /tmp/dagger
+        cd /tmp/dager
+        curl -L https://dl.dagger.io/dagger/install.sh | DAGGER_VERSION=$DAGGER_VERSION sh
         '''
       }
     }
     stage("lint") {
       steps {
-        sh 'bin/dagger call lint --dir . stdout'
+        sh 'dagger call lint --dir . stdout'
       }
     }
     stage("test") {
       steps {
-        sh 'bin/dagger call test --dir . stdout'
+        sh 'dagger call test --dir . stdout'
       }
     }
     stage("publish") {
       steps {
-        sh 'bin/dagger call publish --dir . --token env:DOCKER_TOKEN'
+        sh 'dagger call publish --dir . --token env:DOCKER_TOKEN'
       }
     }
   }
