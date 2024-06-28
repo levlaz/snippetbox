@@ -12,9 +12,7 @@ pipeline {
     stage("install dagger") {
       steps {
         sh '''
-        mkdir -p /tmp/dagger
-        cd /tmp/dager
-        curl -L https://dl.dagger.io/dagger/install.sh | DAGGER_VERSION=$DAGGER_VERSION sh
+        curl -L https://dl.dagger.io/dagger/install.sh | BIN_DIR=/tmp/dagger/bin DAGGER_VERSION=$DAGGER_VERSION sh
         '''
       }
     }
