@@ -3,12 +3,13 @@ package main
 import (
 	"context"
 	"fmt"
+	"main/internal/dagger"
 	"time"
 )
 
 type Ci struct{}
 
-func (m *Ci) base() *Container {
+func (m *Ci) base() *dagger.Container {
 	return dag.Container().From("golang:alpine").
 		WithMountedCache("/go/pkg/mod", dag.CacheVolume("snippetbox-go-mod")).
 		WithMountedCache("/go/build-cache", dag.CacheVolume("snippetbox-go-build")).
@@ -18,12 +19,12 @@ func (m *Ci) base() *Container {
 }
 
 // Lint
-func (m *Ci) Lint(ctx context.Context, dir *Directory) *Container {
- 	return dag.GolangciLint().Run(dir)
+func (m *Ci) Lint(ctx context.Context, dir *dagger.Directory) *dagger.Container {
+	return dag.GolangciLint().Run(dir)
 }
 
 // Run test suite
-func (m *Ci) Test(ctx context.Context, dir *Directory) *Container {
+func (m *Ci) Test(ctx context.Context, dir *dagger.Directory) *dagger.Container {
 	return m.base().
 		WithDirectory("/src", dir).
 		WithWorkdir("/src").
@@ -34,17 +35,12 @@ func (m *Ci) Test(ctx context.Context, dir *Directory) *Container {
 // example usage: "dagger call -m ci ci --dir ."
 func (m *Ci) Ci(
 	ctx context.Context,
-	dir *Directory,
+	dir *dagger.Directory,
 	// +optional
-	token *Secret,
+	token *dagger.Secret,
 	// +optional
 	// +default="latest"
 	commit string,
-	// +optional
-	// +default="local"
-	// environment where ci build is running, workaround for dagger cloud not
-	// showing this information yet.
-	env string,
 ) string {
 
 	var output string
@@ -70,22 +66,15 @@ func (m *Ci) Ci(
 	}
 	output = output + "\n" + publishOutput
 
-	// get TraceURL
-	traceUrl, err := dag.CloudUtils().TraceURL(ctx)
-	if err != nil {
-		fmt.Sprint(err)
-	}
-	output = output + "\n\nDagger Cloud Trace: " + traceUrl
-
 	return output
 }
 
 // publish to dockerhub
 func (m *Ci) Publish(
 	ctx context.Context,
-	dir *Directory,
+	dir *dagger.Directory,
 	// +optional
-	token *Secret,
+	token *dagger.Secret,
 	// +optional
 	// +default="latest"
 	commit string,
@@ -109,7 +98,7 @@ func (m *Ci) Publish(
 
 // Serve development site
 // example usage: "dagger call serve --dir=. up."
-func (m *Ci) Serve(dir *Directory) *Service {
+func (m *Ci) Serve(dir *dagger.Directory) *dagger.Service {
 	return m.base().
 		WithServiceBinding("db", dag.Mariadb().Serve()).
 		WithDirectory("/src", dir).
@@ -123,14 +112,15 @@ func (m *Ci) Serve(dir *Directory) *Service {
 }
 
 // Debug build container with MariaDB service attached
-func (m *Ci) Debug(dir *Directory) *Container {
+func (m *Ci) Debug(dir *dagger.Directory) *dagger.Container {
 	return m.base().
 		WithServiceBinding("db", dag.Mariadb().Serve()).
-        WithServiceBinding("dragonfly", dag.Dragonfly().Serve()).
+		WithServiceBinding("dragonfly", dag.Dragonfly().Serve()).
 		WithDirectory("/src", dir).
 		WithWorkdir("/src").
 		WithExec([]string{"sh", "-c", "mysql -h db -u root < internal/db/init.sql"}).
-		WithExec([]string{"sh", "-c", "mysql -h db -u root snippetbox < internal/db/seed.sql"})
+		WithExec([]string{"sh", "-c", "mysql -h db -u root snippetbox < internal/db/seed.sql"}).
+		Terminal()
 }
 
 // Get Private Container
@@ -140,7 +130,7 @@ func (m *Ci) WithPrivateContainer(
 	// registry username
 	username string,
 	// registry token
-	token *Secret,
-) *Container {
+	token *dagger.Secret,
+) *dagger.Container {
 	return dag.Container().WithRegistryAuth(address, username, token)
 }
