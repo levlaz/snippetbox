@@ -2,7 +2,7 @@ pipeline {
   agent { label 'dagger' }
 
   environment {
-    DAGGER_VERSION = "0.11.9"
+    DAGGER_VERSION = "0.12.2"
     PATH = "/tmp/dagger/bin:$PATH"
     DOCKER_TOKEN = credentials('DOCKER_TOKEN')
     DAGGER_CLOUD_TOKEN =  credentials('DAGGER_CLOUD_TOKEN')
