@@ -1,0 +1,24 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- main
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+- script: curl -L https://dl.dagger.io/dagger/install.sh | BIN_DIR=$HOME/.local/bin sh
+  displayName: 'Install Dagger CLI'
+  # assumes a Go project
+  # modify to use different function(s) as needed
+- script: dagger -m github.com/kpenfound/dagger-modules/golang@v0.2.0 call build --project=. --args=.
+  displayName: 'Call Dagger Function'
+  env:
+    # assumes the Dagger Cloud token is
+    # in a secret named DAGGER_CLOUD_TOKEN
+    # set via the Azure Pipeline settings UI/CLI
+    # the secret is then explicitly mapped to the script env
+    DAGGER_CLOUD_TOKEN: $(DAGGER_CLOUD_TOKEN)
