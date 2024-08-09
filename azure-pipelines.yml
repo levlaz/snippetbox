@@ -17,6 +17,7 @@ steps:
   displayName: 'Install Dagger CLI'
   # assumes a Go project
   # modify to use different function(s) as needed
+- script: env 
 - script: dagger call ci --dir .
   displayName: 'Call Dagger Function'
   env:
