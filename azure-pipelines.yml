@@ -22,3 +22,4 @@ steps:
     # set via the Azure Pipeline settings UI/CLI
     # the secret is then explicitly mapped to the script env
     DAGGER_CLOUD_TOKEN: $(DAGGER_CLOUD_TOKEN)
+    CI: true 
