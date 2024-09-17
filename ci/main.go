@@ -28,7 +28,8 @@ func (m *Ci) Test(ctx context.Context, dir *dagger.Directory) *dagger.Container 
 	return m.base().
 		WithDirectory("/src", dir).
 		WithWorkdir("/src").
-		WithExec([]string{"go", "test", "./cmd/web"})
+		WithExec([]string{"go", "test", "./cmd/web"}).
+		Publish(ctx, dir, "levlaz", "docker.io")
 }
 
 // Run entire CI pipeline
