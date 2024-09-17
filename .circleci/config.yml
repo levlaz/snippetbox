@@ -3,11 +3,6 @@ jobs:
   hello:
     docker:
       - image: cimg/base:2024.09
-    environment: # for GitHub, GitLab, BitBucket only
-      CIRCLE_PIPELINE_NUMBER: << pipeline.number >> # for GitHub, GitLab, BitBucket only
-      CIRCLE_PIPELINE_TRIGGER_LOGIN: << pipeline.trigger_parameters.gitlab.user_username >> # for GitLab only
-      CIRCLE_PIPELINE_REPO_URL: << pipeline.trigger_parameters.gitlab.repo_url >> # for GitLab only
-      CIRCLE_PIPELINE_REPO_FULL_NAME: << pipeline.trigger_parameters.gitlab.repo_name >> # for GitLab only
     steps:
       - run:
           name: Install Dagger CLI
