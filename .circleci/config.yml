@@ -9,7 +9,7 @@ jobs:
       - checkout
       - run:
           name: Install Dagger CLI
-          command: cd /usr/local && { curl -L https://dl.dagger.io/dagger/install.sh | DAGGER_VERSION=0.12.5 sudo -E sh; cd -; }
+          command: cd /usr/local && { curl -L https://dl.dagger.io/dagger/install.sh | DAGGER_VERSION=0.11 sudo -E sh; cd -; }
       - run:
           name: matrix tests
           command: dagger call -m ts build --src="https://github.com/golang/example#master:hello" entries
