@@ -19,12 +19,20 @@ func (m *Ci) base() *dagger.Container {
 }
 
 // Lint
-func (m *Ci) Lint(ctx context.Context, dir *dagger.Directory) *dagger.Container {
+func (m *Ci) Lint(
+	ctx context.Context,
+	// +defaultPath="/"
+	dir *dagger.Directory,
+) *dagger.Container {
 	return dag.GolangciLint().Run(dir)
 }
 
 // Run test suite
-func (m *Ci) Test(ctx context.Context, dir *dagger.Directory) *dagger.Container {
+func (m *Ci) Test(
+	ctx context.Context,
+	// +defaultPath="/"
+	dir *dagger.Directory,
+) *dagger.Container {
 	return m.base().
 		WithDirectory("/src", dir).
 		WithWorkdir("/src").
@@ -35,6 +43,7 @@ func (m *Ci) Test(ctx context.Context, dir *dagger.Directory) *dagger.Container 
 // example usage: "dagger call -m ci ci --dir ."
 func (m *Ci) Ci(
 	ctx context.Context,
+	// +defaultPath="/"
 	dir *dagger.Directory,
 	// +optional
 	token *dagger.Secret,
@@ -72,6 +81,7 @@ func (m *Ci) Ci(
 // publish to dockerhub
 func (m *Ci) Publish(
 	ctx context.Context,
+	// +defaultPath="/"
 	dir *dagger.Directory,
 	// +optional
 	token *dagger.Secret,
@@ -98,7 +108,10 @@ func (m *Ci) Publish(
 
 // Serve development site
 // example usage: "dagger call serve --dir=. up."
-func (m *Ci) Serve(dir *dagger.Directory) *dagger.Service {
+func (m *Ci) Serve(
+	// +defaultPath="/"
+	dir *dagger.Directory,
+) *dagger.Service {
 	return m.base().
 		WithServiceBinding("db", dag.Mariadb().Serve()).
 		WithDirectory("/src", dir).
@@ -112,7 +125,10 @@ func (m *Ci) Serve(dir *dagger.Directory) *dagger.Service {
 }
 
 // Debug build container with MariaDB service attached
-func (m *Ci) Debug(dir *dagger.Directory) *dagger.Container {
+func (m *Ci) Debug(
+	// +defaultPath="/"
+	dir *dagger.Directory,
+) *dagger.Container {
 	return m.base().
 		WithServiceBinding("db", dag.Mariadb().Serve()).
 		WithServiceBinding("dragonfly", dag.Dragonfly().Serve()).
