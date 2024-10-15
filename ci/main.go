@@ -50,8 +50,65 @@ func (m *Ci) Test(
 	return ctr
 }
 
+// publish to dockerhub or ttl.sh if no token is provided
+func (m *Ci) Publish(
+	ctx context.Context,
+	// +defaultPath="/"
+	dir *dagger.Directory,
+	// +optional
+	token *dagger.Secret,
+	// +optional
+	// +default="latest"
+	commit string,
+) (string, error) {
+	if token != nil {
+		ctr := m.base().
+			WithDirectory("/src", dir).
+			WithRegistryAuth("docker.io", "levlaz", token)
+
+		addr, err := ctr.Publish(ctx, fmt.Sprintf("levlaz/snippetbox:%s", commit))
+		if err != nil {
+			return "", fmt.Errorf("%s", err)
+		}
+
+		return fmt.Sprintf("Published: %s", addr), nil
+	} else {
+		addr, err := m.base().
+			WithDirectory("/src", dir).
+			Publish(ctx, fmt.Sprintf("ttl.sh/levlaz/snippetbox:%s", commit))
+		if err != nil {
+			return "", fmt.Errorf("%s", err)
+		}
+
+		return fmt.Sprintf("Published: %s", addr), nil
+	}
+}
+
+// Serve development site
+// example usage: "dagger call serve up"
+func (m *Ci) Serve(
+	// +defaultPath="/"
+	dir *dagger.Directory,
+	// +optional
+	database *dagger.Service,
+) *dagger.Service {
+	if database == nil {
+		database = dag.Mariadb().Serve()
+	}
+	return m.base().
+		WithServiceBinding("db", database).
+		WithDirectory("/src", dir).
+		WithWorkdir("/src").
+		WithExposedPort(4000).
+		WithEnvVariable("CACHEBUSTER", time.Now().String()).
+		WithExec([]string{"sh", "-c", "mysql -h db -u root < internal/db/init.sql"}).
+		WithExec([]string{"sh", "-c", "mysql -h db -u root snippetbox < internal/db/seed.sql"}).
+		WithExec([]string{"go", "run", "./cmd/web", "--dsn", "web:pass@tcp(db)/snippetbox?parseTime=true"}).
+		AsService()
+}
+
 // Run entire CI pipeline
-// example usage: "dagger call -m ci ci --dir ."
+// example usage: "dagger call ci"
 func (m *Ci) Ci(
 	ctx context.Context,
 	// +defaultPath="/"
@@ -89,70 +146,18 @@ func (m *Ci) Ci(
 	return output
 }
 
-// publish to dockerhub or ttl.sh if no token is provided
-func (m *Ci) Publish(
-	ctx context.Context,
-	// +defaultPath="/"
-	dir *dagger.Directory,
-	// +optional
-	token *dagger.Secret,
-	// +optional
-	// +default="latest"
-	commit string,
-) (string, error) {
-	if token != nil {
-		ctr := m.base().
-			WithDirectory("/src", dir).
-			WithRegistryAuth("docker.io", "levlaz", token)
-
-		addr, err := ctr.Publish(ctx, fmt.Sprintf("levlaz/snippetbox:%s", commit))
-		if err != nil {
-			return "", fmt.Errorf("%s", err)
-		}
-
-		return fmt.Sprintf("Published: %s", addr), nil
-	} else {
-		addr, err := m.base().
-			WithDirectory("/src", dir).
-			Publish(ctx, fmt.Sprintf("ttl.sh/levlaz/snippetbox:%s", commit))
-		if err != nil {
-			return "", fmt.Errorf("%s", err)
-		}
-
-		return fmt.Sprintf("Published: %s", addr), nil
-	}
-}
-
-// Serve development site
-// example usage: "dagger call serve --dir=. up."
-func (m *Ci) Serve(
+// Debug build container with MariaDB service attached
+func (m *Ci) Debug(
 	// +defaultPath="/"
 	dir *dagger.Directory,
 	// +optional
 	database *dagger.Service,
-) *dagger.Service {
+) *dagger.Container {
 	if database == nil {
 		database = dag.Mariadb().Serve()
 	}
 	return m.base().
 		WithServiceBinding("db", database).
-		WithDirectory("/src", dir).
-		WithWorkdir("/src").
-		WithExposedPort(4000).
-		WithEnvVariable("CACHEBUSTER", time.Now().String()).
-		WithExec([]string{"sh", "-c", "mysql -h db -u root < internal/db/init.sql"}).
-		WithExec([]string{"sh", "-c", "mysql -h db -u root snippetbox < internal/db/seed.sql"}).
-		WithExec([]string{"go", "run", "./cmd/web", "--dsn", "web:pass@tcp(db)/snippetbox?parseTime=true"}).
-		AsService()
-}
-
-// Debug build container with MariaDB service attached
-func (m *Ci) Debug(
-	// +defaultPath="/"
-	dir *dagger.Directory,
-) *dagger.Container {
-	return m.base().
-		WithServiceBinding("db", dag.Mariadb().Serve()).
 		WithServiceBinding("dragonfly", dag.Dragonfly().Serve()).
 		WithDirectory("/src", dir).
 		WithWorkdir("/src").
