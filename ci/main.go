@@ -32,19 +32,19 @@ func (m *Ci) Test(
 	ctx context.Context,
 	// +defaultPath="/"
 	dir *dagger.Directory,
-	// verbose output for tests
+	// quiet output for tests
 	// +optional
 	// +default=false
-	verboseOutput bool,
+	quiet bool,
 ) *dagger.Container {
 	ctr := m.base().
 		WithDirectory("/src", dir).
 		WithWorkdir("/src")
 
-	if verboseOutput {
-		ctr = ctr.WithExec([]string{"go", "test", "-v", "./..."})
-	} else {
+	if quiet {
 		ctr = ctr.WithExec([]string{"go", "test", "./..."})
+	} else {
+		ctr = ctr.WithExec([]string{"go", "test", "-v", "./..."})
 	}
 
 	return ctr
