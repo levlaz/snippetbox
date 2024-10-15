@@ -32,13 +32,22 @@ func (m *Ci) Test(
 	ctx context.Context,
 	// +defaultPath="/"
 	dir *dagger.Directory,
+	// verbose output for tests
+	// +optional
+	// +default=false
+	verboseOutput bool,
 ) *dagger.Container {
-	return m.base().
+	ctr := m.base().
 		WithDirectory("/src", dir).
-		WithWorkdir("/src").
-		// show interactive terminal
-		WithExec([]string{"apk", "add", "git"}).
-		WithExec([]string{"go", "test", "./cmd/web"})
+		WithWorkdir("/src")
+
+	if verboseOutput {
+		ctr = ctr.WithExec([]string{"go", "test", "-v", "./..."})
+	} else {
+		ctr = ctr.WithExec([]string{"go", "test", "./..."})
+	}
+
+	return ctr
 }
 
 // Run entire CI pipeline
@@ -64,7 +73,7 @@ func (m *Ci) Ci(
 	output = output + "\n" + lintOutput
 
 	// run tests
-	testOutput, err := m.Test(ctx, dir).Stdout(ctx)
+	testOutput, err := m.Test(ctx, dir, false).Stdout(ctx)
 	if err != nil {
 		fmt.Sprint(err)
 	}
