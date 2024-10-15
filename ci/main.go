@@ -89,7 +89,7 @@ func (m *Ci) Ci(
 	return output
 }
 
-// publish to dockerhub
+// publish to dockerhub or ttl.sh if no token is provided
 func (m *Ci) Publish(
 	ctx context.Context,
 	// +defaultPath="/"
@@ -100,7 +100,6 @@ func (m *Ci) Publish(
 	// +default="latest"
 	commit string,
 ) (string, error) {
-
 	if token != nil {
 		ctr := m.base().
 			WithDirectory("/src", dir).
@@ -112,9 +111,16 @@ func (m *Ci) Publish(
 		}
 
 		return fmt.Sprintf("Published: %s", addr), nil
-	}
+	} else {
+		addr, err := m.base().
+			WithDirectory("/src", dir).
+			Publish(ctx, fmt.Sprintf("ttl.sh/levlaz/snippetbox:%s", commit))
+		if err != nil {
+			return "", fmt.Errorf("%s", err)
+		}
 
-	return "Must pass registry token to publish", nil
+		return fmt.Sprintf("Published: %s", addr), nil
+	}
 }
 
 // Serve development site
