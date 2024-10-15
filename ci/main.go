@@ -36,6 +36,8 @@ func (m *Ci) Test(
 	return m.base().
 		WithDirectory("/src", dir).
 		WithWorkdir("/src").
+		// show interactive terminal
+		WithExec([]string{"apk", "add", "git"}).
 		WithExec([]string{"go", "test", "./cmd/web"})
 }
 
@@ -111,9 +113,14 @@ func (m *Ci) Publish(
 func (m *Ci) Serve(
 	// +defaultPath="/"
 	dir *dagger.Directory,
+	// +optional
+	database *dagger.Service,
 ) *dagger.Service {
+	if database == nil {
+		database = dag.Mariadb().Serve()
+	}
 	return m.base().
-		WithServiceBinding("db", dag.Mariadb().Serve()).
+		WithServiceBinding("db", database).
 		WithDirectory("/src", dir).
 		WithWorkdir("/src").
 		WithExposedPort(4000).
@@ -137,16 +144,4 @@ func (m *Ci) Debug(
 		WithExec([]string{"sh", "-c", "mysql -h db -u root < internal/db/init.sql"}).
 		WithExec([]string{"sh", "-c", "mysql -h db -u root snippetbox < internal/db/seed.sql"}).
 		Terminal()
-}
-
-// Get Private Container
-func (m *Ci) WithPrivateContainer(
-	// full private image address in the form of [host]/[user]/[repo]:[tag]
-	address string,
-	// registry username
-	username string,
-	// registry token
-	token *dagger.Secret,
-) *dagger.Container {
-	return dag.Container().WithRegistryAuth(address, username, token)
 }
