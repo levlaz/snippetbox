@@ -7,9 +7,9 @@ import (
 	"time"
 )
 
-type Ci struct{}
+type Snippetbox struct{}
 
-func (m *Ci) base() *dagger.Container {
+func (m *Snippetbox) base() *dagger.Container {
 	return dag.Container().From("golang:alpine").
 		WithMountedCache("/go/pkg/mod", dag.CacheVolume("snippetbox-go-mod")).
 		WithMountedCache("/go/build-cache", dag.CacheVolume("snippetbox-go-build")).
@@ -19,7 +19,7 @@ func (m *Ci) base() *dagger.Container {
 }
 
 // Lint
-func (m *Ci) Lint(
+func (m *Snippetbox) Lint(
 	ctx context.Context,
 	// +defaultPath="/"
 	dir *dagger.Directory,
@@ -28,7 +28,7 @@ func (m *Ci) Lint(
 }
 
 // Run test suite
-func (m *Ci) Test(
+func (m *Snippetbox) Test(
 	ctx context.Context,
 	// +defaultPath="/"
 	dir *dagger.Directory,
@@ -51,7 +51,7 @@ func (m *Ci) Test(
 }
 
 // publish to dockerhub or ttl.sh if no token is provided
-func (m *Ci) Publish(
+func (m *Snippetbox) Publish(
 	ctx context.Context,
 	// +defaultPath="/"
 	dir *dagger.Directory,
@@ -86,7 +86,7 @@ func (m *Ci) Publish(
 
 // Serve development site
 // example usage: "dagger call serve up"
-func (m *Ci) Serve(
+func (m *Snippetbox) Serve(
 	// +defaultPath="/"
 	dir *dagger.Directory,
 	// +optional
@@ -109,7 +109,7 @@ func (m *Ci) Serve(
 
 // Run entire CI pipeline
 // example usage: "dagger call ci"
-func (m *Ci) Ci(
+func (m *Snippetbox) Ci(
 	ctx context.Context,
 	// +defaultPath="/"
 	dir *dagger.Directory,
@@ -147,7 +147,7 @@ func (m *Ci) Ci(
 }
 
 // Debug build container with MariaDB service attached
-func (m *Ci) Debug(
+func (m *Snippetbox) Debug(
 	// +defaultPath="/"
 	dir *dagger.Directory,
 	// +optional
