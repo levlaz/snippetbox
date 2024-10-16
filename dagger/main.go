@@ -74,7 +74,8 @@ func (m *Snippetbox) Test(
 ) *dagger.Container {
 	ctr := m.base().
 		WithDirectory("/src", dir).
-		WithWorkdir("/src")
+		WithWorkdir("/src").
+		WithEnvVariable("CACHEBUSTER", time.Now().String())
 
 	if quiet {
 		ctr = ctr.WithExec([]string{"go", "test", "./..."})
