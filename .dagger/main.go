@@ -7,7 +7,18 @@ import (
 	"time"
 )
 
-type Snippetbox struct{}
+func New(
+	// +defaultPath="/"
+	src *dagger.Directory,
+) *Snippetbox {
+	return &Snippetbox{
+		Src: src,
+	}
+}
+
+type Snippetbox struct {
+	Src *dagger.Directory
+}
 
 func (m *Snippetbox) base() *dagger.Container {
 	return dag.Container().From("golang:alpine").
@@ -21,17 +32,13 @@ func (m *Snippetbox) base() *dagger.Container {
 // Lint
 func (m *Snippetbox) Lint(
 	ctx context.Context,
-	// +defaultPath="/"
-	dir *dagger.Directory,
 ) *dagger.Container {
-	return dag.GolangciLint().Run(dir)
+	return dag.GolangciLint().Run(m.Src)
 }
 
 // Build snippetbox binary for all supported platforms
 func (m *Snippetbox) Build(
 	ctx context.Context,
-	// +defaultPath="/"
-	dir *dagger.Directory,
 ) *dagger.Directory {
 	// define build matrix
 	gooses := []string{"linux", "darwin", "windows"}
@@ -48,7 +55,7 @@ func (m *Snippetbox) Build(
 
 			// build artifact
 			build := m.base().
-				WithDirectory("/src", dir).
+				WithDirectory("/src", m.Src).
 				WithWorkdir("/src").
 				WithEnvVariable("GOOS", goos).
 				WithEnvVariable("GOARCH", goarch).
@@ -65,15 +72,13 @@ func (m *Snippetbox) Build(
 // Run test suite
 func (m *Snippetbox) Test(
 	ctx context.Context,
-	// +defaultPath="/"
-	dir *dagger.Directory,
 	// quiet output for tests
 	// +optional
 	// +default=false
 	quiet bool,
 ) *dagger.Container {
 	ctr := m.base().
-		WithDirectory("/src", dir).
+		WithDirectory("/src", m.Src).
 		WithWorkdir("/src").
 		WithEnvVariable("CACHEBUSTER", time.Now().String())
 
@@ -89,8 +94,6 @@ func (m *Snippetbox) Test(
 // publish to dockerhub or ttl.sh if no token is provided
 func (m *Snippetbox) Publish(
 	ctx context.Context,
-	// +defaultPath="/"
-	dir *dagger.Directory,
 	// +optional
 	token *dagger.Secret,
 	// +optional
@@ -99,7 +102,7 @@ func (m *Snippetbox) Publish(
 ) (string, error) {
 	if token != nil {
 		ctr := m.base().
-			WithDirectory("/src", dir).
+			WithDirectory("/src", m.Src).
 			WithRegistryAuth("docker.io", "levlaz", token)
 
 		addr, err := ctr.Publish(ctx, fmt.Sprintf("levlaz/snippetbox:%s", commit))
@@ -110,7 +113,7 @@ func (m *Snippetbox) Publish(
 		return fmt.Sprintf("Published: %s", addr), nil
 	} else {
 		addr, err := m.base().
-			WithDirectory("/src", dir).
+			WithDirectory("/src", m.Src).
 			Publish(ctx, fmt.Sprintf("ttl.sh/levlaz/snippetbox:%s", commit))
 		if err != nil {
 			return "", fmt.Errorf("%s", err)
@@ -123,8 +126,6 @@ func (m *Snippetbox) Publish(
 // Return snippetbox server with database service attached
 // example usage: "dagger call server up"
 func (m *Snippetbox) Server(
-	// +defaultPath="/"
-	dir *dagger.Directory,
 	// +optional
 	database *dagger.Service,
 ) *dagger.Container {
@@ -133,7 +134,7 @@ func (m *Snippetbox) Server(
 	}
 	return m.base().
 		WithServiceBinding("db", database).
-		WithDirectory("/src", dir).
+		WithDirectory("/src", m.Src).
 		WithWorkdir("/src").
 		WithExposedPort(4000).
 		WithEnvVariable("CACHEBUSTER", time.Now().String()).
@@ -146,8 +147,6 @@ func (m *Snippetbox) Server(
 // example usage: "dagger call ci"
 func (m *Snippetbox) Ci(
 	ctx context.Context,
-	// +defaultPath="/"
-	dir *dagger.Directory,
 	// +optional
 	token *dagger.Secret,
 	// +optional
@@ -158,21 +157,21 @@ func (m *Snippetbox) Ci(
 	var output string
 
 	// run linter
-	lintOutput, err := m.Lint(ctx, dir).Stdout(ctx)
+	lintOutput, err := m.Lint(ctx).Stdout(ctx)
 	if err != nil {
 		fmt.Sprint(err)
 	}
 	output = output + "\n" + lintOutput
 
 	// run tests
-	testOutput, err := m.Test(ctx, dir, false).Stdout(ctx)
+	testOutput, err := m.Test(ctx, false).Stdout(ctx)
 	if err != nil {
 		fmt.Sprint(err)
 	}
 	output = output + "\n" + testOutput
 
 	// publish container
-	publishOutput, err := m.Publish(ctx, dir, token, commit)
+	publishOutput, err := m.Publish(ctx, token, commit)
 	if err != nil {
 		fmt.Sprint(err)
 	}
@@ -183,8 +182,6 @@ func (m *Snippetbox) Ci(
 
 // return container with service attached that is not running
 func (m *Snippetbox) Debug(
-	// +defaultPath="/"
-	dir *dagger.Directory,
 	// +optional
 	database *dagger.Service,
 ) *dagger.Container {
@@ -193,6 +190,6 @@ func (m *Snippetbox) Debug(
 	}
 	return m.base().
 		WithServiceBinding("db", database).
-		WithDirectory("/src", dir).
+		WithDirectory("/src", m.Src).
 		WithWorkdir("/src")
 }
