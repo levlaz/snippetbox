@@ -15,6 +15,6 @@
       "source": "github.com/levlaz/daggerverse/mariadb@cb25b8fb580c6df6f3a68da649dcfd90a67048e4"
     }
   ],
-  "source": "dagger",
+  "source": ".dagger",
   "engineVersion": "v0.13.5"
 }
