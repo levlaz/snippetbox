@@ -120,28 +120,28 @@ func (m *Snippetbox) Publish(
 	}
 }
 
-// Serve development site
-// example usage: "dagger call serve up"
-func (m *Snippetbox) Serve(
-	// +defaultPath="/"
-	dir *dagger.Directory,
-	// +optional
-	database *dagger.Service,
-) *dagger.Service {
-	if database == nil {
-		database = dag.Mariadb().Serve()
-	}
-	return m.base().
-		WithServiceBinding("db", database).
-		WithDirectory("/src", dir).
-		WithWorkdir("/src").
-		WithExposedPort(4000).
-		WithEnvVariable("CACHEBUSTER", time.Now().String()).
-		WithExec([]string{"sh", "-c", "mysql -h db -u root < internal/db/init.sql"}).
-		WithExec([]string{"sh", "-c", "mysql -h db -u root snippetbox < internal/db/seed.sql"}).
-		WithExec([]string{"go", "run", "./cmd/web", "--dsn", "web:pass@tcp(db)/snippetbox?parseTime=true"}).
-		AsService()
-}
+// // Serve development site
+// // example usage: "dagger call serve up"
+// func (m *Snippetbox) Serve(
+// 	// +defaultPath="/"
+// 	dir *dagger.Directory,
+// 	// +optional
+// 	database *dagger.Service,
+// ) *dagger.Service {
+// 	if database == nil {
+// 		database = dag.Mariadb().Serve()
+// 	}
+// 	return m.base().
+// 		WithServiceBinding("db", database).
+// 		WithDirectory("/src", dir).
+// 		WithWorkdir("/src").
+// 		WithExposedPort(4000).
+// 		WithEnvVariable("CACHEBUSTER", time.Now().String()).
+// 		WithExec([]string{"sh", "-c", "mysql -h db -u root < internal/db/init.sql"}).
+// 		WithExec([]string{"sh", "-c", "mysql -h db -u root snippetbox < internal/db/seed.sql"}).
+// 		WithExec([]string{"go", "run", "./cmd/web", "--dsn", "web:pass@tcp(db)/snippetbox?parseTime=true"}).
+// 		AsService()
+// }
 
 // Run entire CI pipeline
 // example usage: "dagger call ci"
@@ -182,8 +182,8 @@ func (m *Snippetbox) Ci(
 	return output
 }
 
-// Debug build container with MariaDB service attached
-func (m *Snippetbox) Debug(
+// Run build container with MariaDB service attached
+func (m *Snippetbox) Server(
 	// +defaultPath="/"
 	dir *dagger.Directory,
 	// +optional
