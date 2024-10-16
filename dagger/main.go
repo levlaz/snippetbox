@@ -27,6 +27,11 @@ func (m *Snippetbox) Lint(
 	return dag.GolangciLint().Run(dir)
 }
 
+// Dev stub for running in dev mode
+func (m *Snippetbox) DevStub() *dagger.Container {
+	return m.base().WithExec([]string{"echo", "dev stub"})
+}
+
 // Build snippetbox binary for all supported platforms
 func (m *Snippetbox) Build(
 	ctx context.Context,
