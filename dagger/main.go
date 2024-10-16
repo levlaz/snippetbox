@@ -198,6 +198,5 @@ func (m *Snippetbox) Server(
 		WithDirectory("/src", dir).
 		WithWorkdir("/src").
 		WithExec([]string{"sh", "-c", "mysql -h db -u root < internal/db/init.sql"}).
-		WithExec([]string{"sh", "-c", "mysql -h db -u root snippetbox < internal/db/seed.sql"}).
-		Terminal()
+		WithExec([]string{"sh", "-c", "mysql -h db -u root snippetbox < internal/db/seed.sql"})
 }
