@@ -120,28 +120,27 @@ func (m *Snippetbox) Publish(
 	}
 }
 
-// // Serve development site
-// // example usage: "dagger call serve up"
-// func (m *Snippetbox) Serve(
-// 	// +defaultPath="/"
-// 	dir *dagger.Directory,
-// 	// +optional
-// 	database *dagger.Service,
-// ) *dagger.Service {
-// 	if database == nil {
-// 		database = dag.Mariadb().Serve()
-// 	}
-// 	return m.base().
-// 		WithServiceBinding("db", database).
-// 		WithDirectory("/src", dir).
-// 		WithWorkdir("/src").
-// 		WithExposedPort(4000).
-// 		WithEnvVariable("CACHEBUSTER", time.Now().String()).
-// 		WithExec([]string{"sh", "-c", "mysql -h db -u root < internal/db/init.sql"}).
-// 		WithExec([]string{"sh", "-c", "mysql -h db -u root snippetbox < internal/db/seed.sql"}).
-// 		WithExec([]string{"go", "run", "./cmd/web", "--dsn", "web:pass@tcp(db)/snippetbox?parseTime=true"}).
-// 		AsService()
-// }
+// Return snippetbox server with database service attached
+// example usage: "dagger call server up"
+func (m *Snippetbox) Server(
+	// +defaultPath="/"
+	dir *dagger.Directory,
+	// +optional
+	database *dagger.Service,
+) *dagger.Container {
+	if database == nil {
+		database = dag.Mariadb().Serve()
+	}
+	return m.base().
+		WithServiceBinding("db", database).
+		WithDirectory("/src", dir).
+		WithWorkdir("/src").
+		WithExposedPort(4000).
+		WithEnvVariable("CACHEBUSTER", time.Now().String()).
+		WithExec([]string{"sh", "-c", "mysql -h db -u root < internal/db/init.sql"}).
+		WithExec([]string{"sh", "-c", "mysql -h db -u root snippetbox < internal/db/seed.sql"}).
+		WithExec([]string{"go", "run", "./cmd/web", "--dsn", "web:pass@tcp(db)/snippetbox?parseTime=true"})
+}
 
 // Run entire CI pipeline
 // example usage: "dagger call ci"
@@ -180,24 +179,4 @@ func (m *Snippetbox) Ci(
 	output = output + "\n" + publishOutput
 
 	return output
-}
-
-// Run build container with MariaDB service attached
-func (m *Snippetbox) Server(
-	// +defaultPath="/"
-	dir *dagger.Directory,
-	// +optional
-	database *dagger.Service,
-) *dagger.Container {
-	if database == nil {
-		database = dag.Mariadb().Serve()
-	}
-	return m.base().
-		WithServiceBinding("db", database).
-		WithServiceBinding("dragonfly", dag.Dragonfly().Serve()).
-		WithDirectory("/src", dir).
-		WithWorkdir("/src").
-		WithExposedPort(4000).
-		WithExec([]string{"sh", "-c", "mysql -h db -u root < internal/db/init.sql"}).
-		WithExec([]string{"sh", "-c", "mysql -h db -u root snippetbox < internal/db/seed.sql"})
 }
