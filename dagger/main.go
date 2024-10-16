@@ -139,10 +139,7 @@ func (m *Snippetbox) Server(
 		WithEnvVariable("CACHEBUSTER", time.Now().String()).
 		WithExec([]string{"sh", "-c", "mysql -h db -u root < internal/db/init.sql"}).
 		WithExec([]string{"sh", "-c", "mysql -h db -u root snippetbox < internal/db/seed.sql"}).
-		WithEntrypoint([]string{"go", "run", "./cmd/web", "--dsn", "web:pass@tcp(db)/snippetbox?parseTime=true"}).
-		WithExec([]string{}, dagger.ContainerWithExecOpts{
-			UseEntrypoint: true,
-		})
+		WithEntrypoint([]string{"go", "run", "./cmd/web", "--dsn", "web:pass@tcp(db)/snippetbox?parseTime=true"})
 }
 
 // Run entire CI pipeline
