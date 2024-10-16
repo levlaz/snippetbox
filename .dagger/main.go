@@ -194,7 +194,5 @@ func (m *Snippetbox) Debug(
 	return m.base().
 		WithServiceBinding("db", database).
 		WithDirectory("/src", dir).
-		WithWorkdir("/src").
-		WithExposedPort(4000).
-		WithEnvVariable("CACHEBUSTER", time.Now().String())
+		WithWorkdir("/src")
 }
