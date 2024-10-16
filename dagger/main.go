@@ -27,6 +27,41 @@ func (m *Snippetbox) Lint(
 	return dag.GolangciLint().Run(dir)
 }
 
+// Build snippetbox binary for all supported platforms
+func (m *Snippetbox) Build(
+	ctx context.Context,
+	// +defaultPath="/"
+	dir *dagger.Directory,
+) *dagger.Directory {
+	// define build matrix
+	gooses := []string{"linux", "darwin", "windows"}
+	goarches := []string{"amd64", "arm64"}
+
+	// create empty directory to put build artifacts
+	outputs := dag.Directory()
+
+	// run build for each combination
+	for _, goos := range gooses {
+		for _, goarch := range goarches {
+			// create directory for each OS and architecture
+			path := fmt.Sprintf("build/%s/%s/", goos, goarch)
+
+			// build artifact
+			build := m.base().
+				WithDirectory("/src", dir).
+				WithWorkdir("/src").
+				WithEnvVariable("GOOS", goos).
+				WithEnvVariable("GOARCH", goarch).
+				WithExec([]string{"go", "build", "-o", path, "./cmd/web"})
+
+			// add build to outputs
+			outputs = outputs.WithDirectory(path, build.Directory(path))
+		}
+	}
+
+	return outputs
+}
+
 // Run test suite
 func (m *Snippetbox) Test(
 	ctx context.Context,
