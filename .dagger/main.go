@@ -196,7 +196,5 @@ func (m *Snippetbox) Debug(
 		WithDirectory("/src", dir).
 		WithWorkdir("/src").
 		WithExposedPort(4000).
-		WithEnvVariable("CACHEBUSTER", time.Now().String()).
-		WithExec([]string{"sh", "-c", "mysql -h db -u root < internal/db/init.sql"}).
-		WithExec([]string{"sh", "-c", "mysql -h db -u root snippetbox < internal/db/seed.sql"})
+		WithEnvVariable("CACHEBUSTER", time.Now().String())
 }
