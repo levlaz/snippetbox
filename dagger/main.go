@@ -197,6 +197,7 @@ func (m *Snippetbox) Server(
 		WithServiceBinding("dragonfly", dag.Dragonfly().Serve()).
 		WithDirectory("/src", dir).
 		WithWorkdir("/src").
+		WithExposedPort(4000).
 		WithExec([]string{"sh", "-c", "mysql -h db -u root < internal/db/init.sql"}).
 		WithExec([]string{"sh", "-c", "mysql -h db -u root snippetbox < internal/db/seed.sql"})
 }
