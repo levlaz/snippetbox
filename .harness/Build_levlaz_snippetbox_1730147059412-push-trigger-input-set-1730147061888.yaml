@@ -1,0 +1,14 @@
+inputSet:
+  name: Build_levlaz_snippetbox_1730147059412-push-trigger-input-set
+  identifier: Build_levlaz_snippetbox_1730147059412pushtriggerinputset
+  orgIdentifier: default
+  projectIdentifier: snippetbox
+  pipeline:
+    identifier: Build_levlaz_snippetbox_1730147059412
+    properties:
+      ci:
+        codebase:
+          build:
+            type: branch
+            spec:
+              branch: <+trigger.branch>
