@@ -33,6 +33,8 @@ pipeline:
                     command: dagger call ci
                   timeout: ""
                   type: Run
+                  envVariables:
+                    DAGGER_CLOUD_TOKEN: <+secrets.getValue("DAGGER_CLOUD_TOKEN")>
           platform:
             arch: Amd64
             os: Linux
