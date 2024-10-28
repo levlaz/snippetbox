@@ -20,15 +20,15 @@ pipeline:
           execution:
             steps:
               - step:
-                  identifier: Dagger Install
-                  name: daggerInstall
+                  identifier: daggerInstall
+                  name: Install Dagger
                   spec:
                     command: curl -L https://dl.dagger.io/dagger/install.sh | BIN_DIR=$HOME/.local/bin sh
                   timeout: ""
                   type: Run
               - step:
-                  identifier: Dagger Pipeline
-                  name: daggerRun
+                  identifier: daggerCall
+                  name: Call Dagger Pipeline
                   spec:
                     command: dagger call ci
                   timeout: ""
