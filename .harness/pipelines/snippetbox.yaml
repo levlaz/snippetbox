@@ -1,6 +1,6 @@
 pipeline:
-  identifier: Build Snippetbox Singly
-  name: Build snippetbox
+  identifier: BuildSnippetbox
+  name: Build snippetbox singly
   orgIdentifier: default
   projectIdentifier: snippetbox
   properties:
@@ -21,14 +21,14 @@ pipeline:
             steps:
               - step:
                   identifier: Dagger Install
-                  name: dagger_install
+                  name: daggerInstall
                   spec:
                     command: curl -L https://dl.dagger.io/dagger/install.sh | BIN_DIR=$HOME/.local/bin sh
                   timeout: ""
                   type: Run
               - step:
                   identifier: Dagger Pipeline
-                  name: dagger_run
+                  name: daggerRun
                   spec:
                     command: dagger call ci
                   timeout: ""
