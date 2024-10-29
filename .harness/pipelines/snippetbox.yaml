@@ -18,6 +18,10 @@ pipeline:
             type: String
             description: Dagger Cloud Token
             value: <+secrets.getValue("DAGGER_CLOUD_TOKEN")>
+          - name: CI
+            type: String
+            description: We're in CI!
+            value: true
         spec:
           cloneCodebase: true
           execution:
