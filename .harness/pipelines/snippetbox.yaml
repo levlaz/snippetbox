@@ -14,8 +14,6 @@ pipeline:
         identifier: build
         name: build
         spec:
-          caching:
-            enabled: true
           cloneCodebase: true
           execution:
             steps:
