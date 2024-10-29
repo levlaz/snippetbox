@@ -13,6 +13,11 @@ pipeline:
     - stage:
         identifier: build
         name: build
+        variables:
+          - name: DAGGER_CLOUD_TOKEN
+            type: Secret
+            description: Dagger Cloud Token
+            value: <+secrets.getValue("DAGGER_CLOUD_TOKEN")>
         spec:
           cloneCodebase: true
           execution:
@@ -31,8 +36,6 @@ pipeline:
                     command: dagger call ci
                   timeout: ""
                   type: Run
-                  envVariables:
-                    DAGGER_CLOUD_TOKEN: <+secrets.getValue("DAGGER_CLOUD_TOKEN")>
           platform:
             arch: Amd64
             os: Linux
