@@ -15,7 +15,7 @@ pipeline:
         name: build
         variables:
           - name: DAGGER_CLOUD_TOKEN
-            type: Secret
+            type: String
             description: Dagger Cloud Token
             value: <+secrets.getValue("DAGGER_CLOUD_TOKEN")>
         spec:
