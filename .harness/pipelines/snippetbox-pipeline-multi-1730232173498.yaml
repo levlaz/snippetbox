@@ -1,0 +1,69 @@
+pipeline:
+  identifier: Build_snippetbox_pipeline_multi_1730232178498
+  name: Build snippetbox-pipeline-multi
+  orgIdentifier: default
+  projectIdentifier: snippetbox
+  properties:
+    ci:
+      codebase:
+        build: <+input>
+        repoName: snippetbox-pipeline-multi
+  stages:
+    - stage:
+        identifier: build
+        name: build
+        variables:
+          - name: DAGGER_CLOUD_TOKEN
+            type: String
+            description: Dagger Cloud Token
+            value: <+secrets.getValue("DAGGER_CLOUD_TOKEN")>
+          - name: CI
+            type: String
+            description: We're in CI!
+            value: "1"
+        spec:
+          cloneCodebase: true
+          execution:
+            steps:
+              - step:
+                  identifier: daggerInstall
+                  name: Install Dagger
+                  spec:
+                    command: curl -L https://dl.dagger.io/dagger/install.sh | BIN_DIR=$HOME/.local/bin sh
+                  timeout: ""
+                  type: Run
+              - step:
+                  identifier: lint
+                  name: Lint
+                  spec:
+                    command: dagger call -m github.com/levlaz/snippetbox lint stdout
+                  timeout: ""
+                  type: Run
+              - step:
+                  identifier: test
+                  name: Test
+                  spec:
+                    command: dagger call -m github.com/levlaz/snippetbox test stdout
+                  timeout: ""
+                  type: Run
+              - step:
+                  identifier: publish
+                  name: Publish
+                  spec:
+                    command: dagger call -m github.com/levlaz/snippetbox publish
+                  timeout: ""
+                  type: Run
+              - step:
+                  identifier: stopEngine
+                  name: Stop Dagger Engine
+                  spec:
+                    command: docker stop -t 300 $(docker ps --filter name="dagger-engine-*" -q)
+                  timeout: ""
+                  type: Run
+          platform:
+            arch: Amd64
+            os: Linux
+          runtime:
+            spec: {}
+            type: Cloud
+        type: CI
