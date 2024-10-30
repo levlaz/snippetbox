@@ -11,4 +11,4 @@ inputSet:
           build:
             type: branch
             spec:
-              branch: main
+              branch: <+trigger.branch>
