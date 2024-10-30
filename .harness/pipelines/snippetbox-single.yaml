@@ -1,6 +1,6 @@
 pipeline:
-  identifier: build_snippetbox
-  name: Build snippetbox
+  identifier: build_snippetbox_single
+  name: Build snippetbox in one shot
   orgIdentifier: default
   projectIdentifier: snippetbox
   properties:
@@ -34,24 +34,10 @@ pipeline:
                   timeout: ""
                   type: Run
               - step:
-                  identifier: lint
-                  name: Lint
+                  identifier: ci
+                  name: Run CI Pipeline
                   spec:
-                    command: dagger call lint stdout
-                  timeout: ""
-                  type: Run
-              - step:
-                  identifier: test
-                  name: Test
-                  spec:
-                    command: dagger call test stdout
-                  timeout: ""
-                  type: Run
-              - step:
-                  identifier: publish
-                  name: Publish
-                  spec:
-                    command: dagger call publish
+                    command: dagger call ci
                   timeout: ""
                   type: Run
               - step:
