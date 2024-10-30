@@ -9,7 +9,7 @@ pipeline:
         build: <+input>
         connectorRef: account.Github_OAuth_1726074577341
         repoName: levlaz/snippetbox
- stages:
+  stages:
     - stage:
         identifier: build
         name: build
