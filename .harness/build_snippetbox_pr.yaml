@@ -1,10 +1,10 @@
 inputSet:
-  name: Build_levlaz_snippetbox_1730310783265-pr-trigger-input-set
-  identifier: Build_levlaz_snippetbox_1730310783265prtriggerinputset
+  name: build-snippetbox-pr-trigger-input-set
+  identifier: build_snippetbox_pr_trigger_input_set
   orgIdentifier: default
   projectIdentifier: snippetbox
   pipeline:
-    identifier: Build_levlaz_snippetbox_1730310783265
+    identifier: build_snippetbox
     properties:
       ci:
         codebase:
