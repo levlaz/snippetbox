@@ -1,0 +1,14 @@
+inputSet:
+  name: input-set-single-push
+  identifier: inputsetsinglepush
+  orgIdentifier: default
+  projectIdentifier: snippetbox
+  pipeline:
+    identifier: build_snippetbox_single
+    properties:
+      ci:
+        codebase:
+          build:
+            type: branch
+            spec:
+              branch: main
