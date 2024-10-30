@@ -65,7 +65,7 @@ pipeline:
                   identifier: printEngineLogs
                   name: Print Engine Logs
                   spec:
-                    command: docker logs -t 300 $(docker ps -a --filter name="dagger-engine-*" -q)
+                    command: docker logs $(docker ps -a --filter name="dagger-engine-*" -q)
                   timeout: ""
                   type: Run
           platform:
