@@ -21,7 +21,7 @@ pipeline:
           - name: CI
             type: String
             description: We're in CI!
-            value: "1"
+            value: "true"
         spec:
           cloneCodebase: true
           execution:
