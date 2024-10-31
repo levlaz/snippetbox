@@ -5,9 +5,6 @@ import (
 	"fmt"
 	"main/internal/dagger"
 	"time"
-
-	"go.opentelemetry.io/otel/codes"
-	"golang.org/x/sync/errgroup"
 )
 
 func New(
@@ -183,7 +180,8 @@ func (m *Snippetbox) OldCi(
 	return output
 }
 
-// Run CI pipeline with custom traces and error groups
+// Run entire CI pipeline
+// example usage: "dagger call ci"
 func (m *Snippetbox) Ci(
 	ctx context.Context,
 	// +optional
@@ -191,49 +189,32 @@ func (m *Snippetbox) Ci(
 	// +optional
 	// +default="latest"
 	commit string,
-) (rerr error) {
-	eg, ctx := errgroup.WithContext(ctx)
+) string {
 
-	// lint
-	eg.Go(func() (rerr error) {
-		ctx, span := Tracer().Start(ctx, "lint go files")
-		defer func() {
-			if rerr != nil {
-				span.SetStatus(codes.Error, rerr.Error())
-			}
-			span.End()
-		}()
-		_, err := m.Lint(ctx).Stdout(ctx)
-		return err
-	})
+	var output string
 
-	// test
-	eg.Go(func() (rerr error) {
-		ctx, span := Tracer().Start(ctx, "run tests")
-		defer func() {
-			if rerr != nil {
-				span.SetStatus(codes.Error, rerr.Error())
-			}
-			span.End()
-		}()
-		_, err := m.Test(ctx, false).Stdout(ctx)
-		return err
-	})
+	// run linter
+	lintOutput, err := m.Lint(ctx).Stdout(ctx)
+	if err != nil {
+		fmt.Sprint(err)
+	}
+	output = output + "\n" + lintOutput
 
-	// publish
-	eg.Go(func() (rerr error) {
-		ctx, span := Tracer().Start(ctx, "publish container")
-		defer func() {
-			if rerr != nil {
-				span.SetStatus(codes.Error, rerr.Error())
-			}
-			span.End()
-		}()
-		_, err := m.Publish(ctx, token, commit)
-		return err
-	})
+	// run tests
+	testOutput, err := m.Test(ctx, false).Stdout(ctx)
+	if err != nil {
+		fmt.Sprint(err)
+	}
+	output = output + "\n" + testOutput
 
-	return eg.Wait()
+	// publish container
+	publishOutput, err := m.Publish(ctx, token, commit)
+	if err != nil {
+		fmt.Sprint(err)
+	}
+	output = output + "\n" + publishOutput
+
+	return output
 }
 
 // return container with service attached that is not running
