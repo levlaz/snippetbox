@@ -34,6 +34,13 @@ pipeline:
                   timeout: ""
                   type: Run
               - step:
+                  identifier: dumpEnv
+                  name: Print Environment for Debugging
+                  spec:
+                    command: env
+                  timeout: ""
+                  type: Run
+              - step:
                   identifier: lint
                   name: Lint
                   spec:

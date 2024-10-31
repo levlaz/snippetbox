@@ -4,17 +4,20 @@
   "dependencies": [
     {
       "name": "dragonfly",
-      "source": "github.com/levlaz/daggerverse/dragonfly@36bd4f103d1ce334ca95f567a5f1b348f44c12d4"
+      "source": "github.com/levlaz/daggerverse/dragonfly@36bd4f103d1ce334ca95f567a5f1b348f44c12d4",
+      "pin": "36bd4f103d1ce334ca95f567a5f1b348f44c12d4"
     },
     {
       "name": "golangci-lint",
-      "source": "github.com/sagikazarmark/daggerverse/golangci-lint@b45dbd7448bb967aca4a538af9ce7f042abf0316"
+      "source": "github.com/sagikazarmark/daggerverse/golangci-lint@b45dbd7448bb967aca4a538af9ce7f042abf0316",
+      "pin": "b45dbd7448bb967aca4a538af9ce7f042abf0316"
     },
     {
       "name": "mariadb",
-      "source": "github.com/levlaz/daggerverse/mariadb@cb25b8fb580c6df6f3a68da649dcfd90a67048e4"
+      "source": "github.com/levlaz/daggerverse/mariadb@cb25b8fb580c6df6f3a68da649dcfd90a67048e4",
+      "pin": "cb25b8fb580c6df6f3a68da649dcfd90a67048e4"
     }
   ],
   "source": ".dagger",
-  "engineVersion": "v0.13.5"
+  "engineVersion": "v0.13.6"
 }

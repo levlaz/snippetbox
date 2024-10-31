@@ -5,6 +5,9 @@ import (
 	"fmt"
 	"main/internal/dagger"
 	"time"
+
+	"go.opentelemetry.io/otel/codes"
+	"golang.org/x/sync/errgroup"
 )
 
 func New(
@@ -143,9 +146,9 @@ func (m *Snippetbox) Server(
 		WithExec([]string{"go", "run", "./cmd/web", "--dsn", "web:pass@tcp(db)/snippetbox?parseTime=true"})
 }
 
-// Run entire CI pipeline
+// Run entire Old CI pipeline
 // example usage: "dagger call ci"
-func (m *Snippetbox) Ci(
+func (m *Snippetbox) OldCi(
 	ctx context.Context,
 	// +optional
 	token *dagger.Secret,
@@ -178,6 +181,59 @@ func (m *Snippetbox) Ci(
 	output = output + "\n" + publishOutput
 
 	return output
+}
+
+// Run CI pipeline with custom traces and error groups
+func (m *Snippetbox) Ci(
+	ctx context.Context,
+	// +optional
+	token *dagger.Secret,
+	// +optional
+	// +default="latest"
+	commit string,
+) (rerr error) {
+	eg, ctx := errgroup.WithContext(ctx)
+
+	// lint
+	eg.Go(func() (rerr error) {
+		ctx, span := Tracer().Start(ctx, "lint go files")
+		defer func() {
+			if rerr != nil {
+				span.SetStatus(codes.Error, rerr.Error())
+			}
+			span.End()
+		}()
+		_, err := m.Lint(ctx).Stdout(ctx)
+		return err
+	})
+
+	// test
+	eg.Go(func() (rerr error) {
+		ctx, span := Tracer().Start(ctx, "run tests")
+		defer func() {
+			if rerr != nil {
+				span.SetStatus(codes.Error, rerr.Error())
+			}
+			span.End()
+		}()
+		_, err := m.Test(ctx, false).Stdout(ctx)
+		return err
+	})
+
+	// publish
+	eg.Go(func() (rerr error) {
+		ctx, span := Tracer().Start(ctx, "publish container")
+		defer func() {
+			if rerr != nil {
+				span.SetStatus(codes.Error, rerr.Error())
+			}
+			span.End()
+		}()
+		_, err := m.Publish(ctx, token, commit)
+		return err
+	})
+
+	return eg.Wait()
 }
 
 // return container with service attached that is not running
