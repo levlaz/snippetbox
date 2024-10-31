@@ -18,10 +18,10 @@ pipeline:
             type: String
             description: Dagger Cloud Token
             value: <+secrets.getValue("DAGGER_CLOUD_TOKEN")>
-          # - name: CI
-          #   type: String
-          #   description: We're in CI!
-          #   value: "true"
+          - name: CI
+            type: String
+            description: We're in CI!
+            value: "true"
         spec:
           cloneCodebase: true
           execution:
@@ -30,7 +30,7 @@ pipeline:
                   identifier: daggerInstall
                   name: Install Dagger
                   spec:
-                    command: curl -L https://dl.dagger.io/dagger/install.sh | BIN_DIR=$HOME/.local/bin sh
+                    command: curl -L https://dl.dagger.io/dagger/install.sh | DAGGER_COMMIT=9643b8daadfa457c570289ced9e885b9a10e9480 BIN_DIR=$HOME/.local/bin sh
                   timeout: ""
                   type: Run
               - step:
