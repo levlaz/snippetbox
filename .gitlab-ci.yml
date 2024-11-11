@@ -18,9 +18,11 @@
 build:
   extends: [.dagger]
   script:
-    - export -p
-    - dagger call ci --env gitlab
-    # this step intentionally does not pass token to show the failure condition.
-    # dagger call -m ci publish --dir . --token env:DOCKER_TOKEN
-    - dagger call -m ci publish --dir . --commit $CI_COMMIT_SHORT_SHA --env gitlab
-    - docker stop -t 300 $(docker ps --filter name="dagger-engine-*" -q)
+    - export -p > env_vars.sh
+    - dagger core container from --address "alpine" with-file --path "env_vars.sh" --source env_vars.sh with-exec --args "sh,-c,source env_vars.sh && env" stdout
+    # - dagger call core 
+    # - dagger call ci
+    # # this step intentionally does not pass token to show the failure condition.
+    # # dagger call -m ci publish --dir . --token env:DOCKER_TOKEN
+    # - dagger ci --commit $CI_COMMIT_SHORT_SHA
+    # - docker stop -t 300 $(docker ps --filter name="dagger-engine-*" -q)
