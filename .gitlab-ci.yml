@@ -19,7 +19,7 @@ build:
   extends: [.dagger]
   script:
     - export -p
-    - dagger call -m ci ci --dir . --env gitlab
+    - dagger call ci --env gitlab
     # this step intentionally does not pass token to show the failure condition.
     # dagger call -m ci publish --dir . --token env:DOCKER_TOKEN
     - dagger call -m ci publish --dir . --commit $CI_COMMIT_SHORT_SHA --env gitlab
