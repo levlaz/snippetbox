@@ -142,9 +142,9 @@ func (m *Snippetbox) Server(
 		WithWorkdir("/src").
 		WithExposedPort(4000).
 		WithEnvVariable("CACHEBUSTER", time.Now().String()).
-		WithExec([]string{"sh", "-c", "mysql -h db -u root < internal/db/init.sql"}).
-		WithExec([]string{"sh", "-c", "mysql -h db -u root snippetbox < internal/db/seed.sql"}).
-		WithExec([]string{"go", "run", "./cmd/web", "--dsn", "web:pass@tcp(db)/snippetbox?parseTime=true"})
+		WithExec([]string{"sh", "-c", "mariadb --skip-ssl -h db -u root < internal/db/init.sql"}).
+		WithExec([]string{"sh", "-c", "mariadb --skip-ssl -h db -u root snippetbox < internal/db/seed.sql"}).
+		WithDefaultArgs([]string{"go", "run", "./cmd/web", "--dsn", "web:pass@tcp(db)/snippetbox?parseTime=true"})
 }
 
 // Run entire CI pipeline
