@@ -10,22 +10,22 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Pull Dagger Image & Run Core
-        uses: dagger/dagger-for-github@v6
+        uses: dagger/dagger-for-github@v6.15.1
         with:
           verb: core
           cloud-token: ${{ secrets.DAGGER_CLOUD_TOKEN }}
       - name: Run Functions First Time
-        uses: dagger/dagger-for-github@v6
+        uses: dagger/dagger-for-github@v6.15.1
         with:
           verb: functions
           cloud-token: ${{ secrets.DAGGER_CLOUD_TOKEN }}
       - name: Run Functions Second Time
-        uses: dagger/dagger-for-github@v6
+        uses: dagger/dagger-for-github@v6.15.1
         with:
           verb: functions
           cloud-token: ${{ secrets.DAGGER_CLOUD_TOKEN }}
       - name: Run CI pipeline
-        uses: dagger/dagger-for-github@v6
+        uses: dagger/dagger-for-github@v6.15.1
         with:
           call: ci
           cloud-token: ${{ secrets.DAGGER_CLOUD_TOKEN }}
