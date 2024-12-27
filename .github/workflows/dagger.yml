@@ -18,18 +18,19 @@ jobs:
       - name: Run Functions First Time
         uses: dagger/dagger-for-github@v6.15.1
         with:
-          verb: functions
+          verb: functions -q
           cloud-token: ${{ secrets.DAGGER_CLOUD_TOKEN }}
           version: "0.15.1"
       - name: Run Functions Second Time
         uses: dagger/dagger-for-github@v6.15.1
         with:
-          verb: functions
+          verb: functions -q
           cloud-token: ${{ secrets.DAGGER_CLOUD_TOKEN }}
           version: "0.15.1"
       - name: Run CI pipeline
         uses: dagger/dagger-for-github@v6.15.1
         with:
+          module: .
           call: ci
           cloud-token: ${{ secrets.DAGGER_CLOUD_TOKEN }}
           version: "0.15.1"
