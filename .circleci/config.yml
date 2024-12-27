@@ -24,4 +24,4 @@ jobs:
           command: dagger functions --progress=plain
       - run:
           name: matrix tests
-          command: dagger call -m ts build --src="https://github.com/golang/example#master:hello" entries
+          command: dagger call ci --progress=plain
