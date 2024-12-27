@@ -23,5 +23,5 @@ jobs:
           name: Call Functions Second Time
           command: dagger functions --progress=plain
       - run:
-          name: matrix tests
+          name: Run CI pipeline
           command: dagger call ci --progress=plain
