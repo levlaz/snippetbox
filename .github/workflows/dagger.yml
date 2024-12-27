@@ -9,31 +9,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - name: Install Dagger CLI
+        run: cd /usr/local && { curl -L https://dl.dagger.io/dagger/install.sh | sh; cd -; }
       - name: Pull Dagger Image & Run Core
-        uses: dagger/dagger-for-github@v6.15.1
-        with:
-          verb: core
-          cloud-token: ${{ secrets.DAGGER_CLOUD_TOKEN }}
-          dagger-flags: -q
-          version: "0.15.1"
-      - name: Run Functions First Time
-        uses: dagger/dagger-for-github@v6.15.1
-        with:
-          verb: functions
-          cloud-token: ${{ secrets.DAGGER_CLOUD_TOKEN }}
-          dagger-flags: -q
-          version: "0.15.1"
-      - name: Run Functions Second Time
-        uses: dagger/dagger-for-github@v6.15.1
-        with:
-          verb: functions
-          cloud-token: ${{ secrets.DAGGER_CLOUD_TOKEN }}
-          dagger-flags: -q
-          version: "0.15.1"
+        run: dagger core -q
+      - name: Call Functions First Time
+        run: dagger functions -q
+      - name: Call Functions Second Time
+        run: dagger functions -q
       - name: Run CI pipeline
-        uses: dagger/dagger-for-github@v6.15.1
-        with:
-          module: .
-          call: ci
-          cloud-token: ${{ secrets.DAGGER_CLOUD_TOKEN }}
-          version: "0.15.1"
+        run: dagger call ci --commit $GITHUB_SHA
+        env:
+           DAGGER_CLOUD_TOKEN: ${{ secrets.DAGGER_CLOUD_TOKEN }}
+      # - name: Run CI pipeline using dagger-for-github
+      #   uses: dagger/dagger-for-github@v6.15.1
+      #   with:
+      #     module: .
+      #     call: ci
+      #     cloud-token: ${{ secrets.DAGGER_CLOUD_TOKEN }}
+      #     version: "0.15.1"
