@@ -9,21 +9,23 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-go@v3
+      - name: Pull Dagger Image & Run Core
+        uses: dagger/dagger-for-github@v6
         with:
-          go-version: '1.20'
-      - name: Install Dagger CLI
-        run: cd /usr/local && { curl -L https://dl.dagger.io/dagger/install.sh | sh; cd -; }
-      - name: Run Dagger pipeline
-        run: dagger call -m ci ci --dir . --env gha
-        env:
-           DAGGER_CLOUD_TOKEN: ${{ secrets.DAGGER_CLOUD_TOKEN }}
-      # this step intentionally does not pass token to show the failure condition.
-      # dagger call -m ci publish --dir . --token env:DOCKER_TOKEN
-      - name: Publish Docker Image to Registry
-        run: dagger call -m ci publish --dir . --commit $GITHUB_SHA --env gha
-        env:
-           DAGGER_CLOUD_TOKEN: ${{ secrets.DAGGER_CLOUD_TOKEN }}
-      - name: Stop Engine
-        run: docker stop -t 300 $(docker ps --filter name="dagger-engine-*" -q)
-        if: always()
+          verb: core
+          cloud-token: ${{ secrets.DAGGER_CLOUD_TOKEN }}
+      - name: Run Functions First Time
+        uses: dagger/dagger-for-github@v6
+        with:
+          verb: functions
+          cloud-token: ${{ secrets.DAGGER_CLOUD_TOKEN }}
+      - name: Run Functions Second Time
+        uses: dagger/dagger-for-github@v6
+        with:
+          verb: functions
+          cloud-token: ${{ secrets.DAGGER_CLOUD_TOKEN }}
+      - name: Run CI pipeline
+        uses: dagger/dagger-for-github@v6
+        with:
+          call: ci
+          cloud-token: ${{ secrets.DAGGER_CLOUD_TOKEN }}
