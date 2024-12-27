@@ -12,11 +12,11 @@ jobs:
       - name: Install Dagger CLI
         run: cd /usr/local && { curl -L https://dl.dagger.io/dagger/install.sh | sh; cd -; }
       - name: Pull Dagger Image & Run Core
-        run: dagger core -q
+        run: dagger core -s
       - name: Call Functions First Time
-        run: dagger functions -q
+        run: dagger functions -s
       - name: Call Functions Second Time
-        run: dagger functions -q
+        run: dagger functions -s
       - name: Run CI pipeline
         run: dagger call ci --commit $GITHUB_SHA
         env:
