@@ -9,7 +9,7 @@ jobs:
       - checkout
       - run:
           name: Install Dagger CLI
-          command: cd /usr/local && { curl -L https://dl.dagger.io/dagger/install.sh | DAGGER_VERSION=0.11 sudo -E sh; cd -; }
+          command: cd /usr/local && { curl -L https://dl.dagger.io/dagger/install.sh | sudo -E sh; cd -; }
       - run:
           # adding this step to test out how long it takes to pull the dagger image
           name: Pull Dagger Image
