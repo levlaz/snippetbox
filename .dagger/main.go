@@ -147,43 +147,6 @@ func (m *Snippetbox) Server(
 		WithExec([]string{"go", "run", "./cmd/web", "--dsn", "web:pass@tcp(db)/snippetbox?parseTime=true"})
 }
 
-// Run entire Old CI pipeline
-// example usage: "dagger call ci"
-func (m *Snippetbox) OldCi(
-	ctx context.Context,
-	// +optional
-	token *dagger.Secret,
-	// +optional
-	// +default="latest"
-	commit string,
-) string {
-
-	var output string
-
-	// run linter
-	lintOutput, err := m.Lint(ctx).Stdout(ctx)
-	if err != nil {
-		fmt.Sprint(err)
-	}
-	output = output + "\n" + lintOutput
-
-	// run tests
-	testOutput, err := m.Test(ctx, false).Stdout(ctx)
-	if err != nil {
-		fmt.Sprint(err)
-	}
-	output = output + "\n" + testOutput
-
-	// publish container
-	publishOutput, err := m.Publish(ctx, token, commit)
-	if err != nil {
-		fmt.Sprint(err)
-	}
-	output = output + "\n" + publishOutput
-
-	return output
-}
-
 // Run entire CI pipeline
 // example usage: "dagger call ci"
 func (m *Snippetbox) Ci(
