@@ -1,0 +1,4 @@
+#!/usr/bin/env dagger shell
+
+# example of calling dagger shell as script 
+container | from alpine | with-exec echo "hello world" | stdout

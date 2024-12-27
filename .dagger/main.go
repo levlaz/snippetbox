@@ -26,14 +26,18 @@ func (m *Snippetbox) base() *dagger.Container {
 		WithMountedCache("/go/build-cache", dag.CacheVolume("snippetbox-go-build")).
 		WithEnvVariable("GOCACHE", "/go/build-cache").
 		WithExec([]string{"apk", "add", "tree"}).
-		WithExec([]string{"apk", "add", "mysql-client"})
+		WithExec([]string{"apk", "add", "mysql-client"}).
+		WithExec([]string{"apk", "add", "golangci-lint"})
 }
 
 // Lint
 func (m *Snippetbox) Lint(
 	ctx context.Context,
 ) *dagger.Container {
-	return dag.GolangciLint().Run(m.Src)
+	return m.base().
+		WithDirectory("/src", m.Src).
+		WithWorkdir("/src").
+		WithExec([]string{"golangci-lint", "run", "-v"})
 }
 
 // Build snippetbox binary for all supported platforms
