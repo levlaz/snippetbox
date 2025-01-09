@@ -13,7 +13,7 @@
 .dagger:
   extends: [.docker]
   before_script:
-    - apk add docker-cli curl
+    - apk add docker-cli curl util-linux
     - cd /usr/local && { curl -L https://dl.dagger.io/dagger/install.sh | sh; cd -; }
 build:
   extends: [.dagger]
