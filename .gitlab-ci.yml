@@ -1,9 +1,3 @@
-stages:
-  - prepare
-  - test
-  - build
-  - cache_check
-
 .docker:
   image: golang:alpine
   services:
@@ -21,28 +15,17 @@ stages:
   before_script:
     - apk add docker-cli curl
     - cd /usr/local && { curl -L https://dl.dagger.io/dagger/install.sh | sh; cd -; }
-
-dagger-engine-test:
+build:
   extends: [.dagger]
-  stage: prepare
   script:
+    # test speed to pull engine
     - dagger core
+    # test speed to call functions the first time
+    - dagger functions 
+    # test speed to call functions the second time
+    - dagger functions 
+    # test speed to call ci
+    - dagger call --progress=tty ci 
+    # test speed to call ci and see cache
+    - dagger --progress=tty call ci 
 
-dagger-functions-test:
-  extends: [.dagger]
-  stage: test
-  script:
-    - dagger functions
-    - dagger functions  # Second run to test caching
-
-dagger-ci-test:
-  extends: [.dagger]
-  stage: build
-  script:
-    - dagger call --progress=tty ci
-
-dagger-ci-test-cache:
-  extends: [.dagger]
-  stage: cache_check
-  script:
-    - dagger call --progress=tty ci  # second run to check cache
