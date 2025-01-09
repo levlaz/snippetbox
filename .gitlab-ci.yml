@@ -27,4 +27,4 @@ build:
     # test speed to call ci
     - dagger call ci 
     # test speed to call ci and see cache
-    - dagger call ci 
+    - dagger -vvv call ci 
