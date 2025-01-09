@@ -18,14 +18,6 @@
 build:
   extends: [.dagger]
   script:
-    # test speed to pull engine
-    - dagger core
-    # test speed to call functions the first time
-    - dagger functions 
-    # test speed to call functions the second time
-    - dagger functions 
-    # test speed to call ci
-    - dagger call --progress=tty ci 
-    # test speed to call ci and see cache
-    - dagger --progress=tty call ci 
+    # fake a tty 
+    - script dagger call ci
 
