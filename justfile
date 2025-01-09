@@ -18,6 +18,11 @@ empty:
 push:
     git push gitlab main && git push origin main && git push sourcehut main && git push ado main
 
+# quick commit and push to all remotes
+cpush:
+    git commit -am 'push' && git push gitlab main && git push origin main && git push sourcehut main && git push ado main
+
+
 # publish docker image to dockerhub
 publish:
     dagger call -m ci publish --dir . --token env:DOCKER_TOKEN --commit $(git rev-parse HEAD)

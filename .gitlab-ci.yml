@@ -19,5 +19,5 @@ build:
   extends: [.dagger]
   script:
     # fake a tty 
-    - script dagger call ci
+    - script -q /dev/null dagger call ci
 
