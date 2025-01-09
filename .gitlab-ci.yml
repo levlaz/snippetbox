@@ -17,23 +17,22 @@
     - cd /usr/local && { curl -L https://dl.dagger.io/dagger/install.sh | sh; cd -; }
 build:
   extends: [.dagger]
-  script:
-    # test speed to pull engine
-    stage: pull_engine
-    - dagger core
+  # test speed to pull engine
+  stage: pull_engine
+  - dagger core
 
-    # test speed to call functions the first time
-    stage: first_functions
-    - dagger functions 
+  # test speed to call functions the first time
+  stage: first_functions
+  - dagger functions 
 
-    # test speed to call functions the second time
-    stage: second_functions
-    - dagger functions 
+  # test speed to call functions the second time
+  stage: second_functions
+  - dagger functions 
 
-    # test speed to call ci
-    stage: ci_run
-    - dagger call ci 
+  # test speed to call ci
+  stage: ci_run
+  - dagger call ci 
 
-    # test speed to call ci and see cache
-    stage: ci_cache
-    - dagger -vvv call ci 
+  # test speed to call ci and see cache
+  stage: ci_cache
+  - dagger -vvv call ci 
