@@ -39,10 +39,10 @@ dagger-ci-test:
   extends: [.dagger]
   stage: build
   script:
-    - dagger call ci
+    - dagger call --progress=tty ci
 
 dagger-ci-test-cache:
   extends: [.dagger]
   stage: cache_check
   script:
-    - dagger call ci  # second run to check cache
+    - dagger call --progress=tty ci  # second run to check cache
