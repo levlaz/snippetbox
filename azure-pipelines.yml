@@ -17,9 +17,9 @@ steps:
   displayName: 'Install Dagger CLI'
   # assumes a Go project
   # modify to use different function(s) as needed
-# - script: env 
-# - script: git branch
-# - script: git checkout $(Build.SourceBranchName)
+  # - script: env 
+  # - script: git branch
+  # - script: git checkout $(Build.SourceBranchName)
   displayName: 'Checkout Source Branch'
 - script: dagger call ci
   displayName: 'Call Dagger Function'
