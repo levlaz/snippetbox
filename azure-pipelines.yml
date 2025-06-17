@@ -9,8 +9,8 @@ trigger:
 pool:
   vmImage: ubuntu-latest
 
-variables:
-  CI: "true"
+# variables:
+#   CI: "true"
 
 steps:
 - checkout: self
