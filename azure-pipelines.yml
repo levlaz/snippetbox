@@ -9,9 +9,6 @@ trigger:
 pool:
   vmImage: ubuntu-latest
 
-# variables:
-#   CI: "true"
-
 steps:
 - checkout: self
   fetchDepth: 0
