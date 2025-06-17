@@ -15,10 +15,8 @@ variables:
 steps:
 - script: curl -L https://dl.dagger.io/dagger/install.sh | BIN_DIR=$HOME/.local/bin sh
   displayName: 'Install Dagger CLI'
-  # assumes a Go project
-  # modify to use different function(s) as needed
-  # - script: env 
-  # - script: git branch
+- script: env 
+- script: git branch
 - script: git checkout $(Build.SourceBranchName)
   displayName: 'Checkout Source Branch'
 - script: dagger call ci
