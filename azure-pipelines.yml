@@ -19,8 +19,8 @@ steps:
   # modify to use different function(s) as needed
   # - script: env 
   # - script: git branch
-  # - script: git checkout $(Build.SourceBranchName)
-  # displayName: 'Checkout Source Branch'
+- script: git checkout $(Build.SourceBranchName)
+  displayName: 'Checkout Source Branch'
 - script: dagger call ci
   displayName: 'Call Dagger Function'
   env:

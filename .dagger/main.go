@@ -197,3 +197,105 @@ func (m *Snippetbox) Debug(
 		WithDirectory("/src", m.Src).
 		WithWorkdir("/src")
 }
+
+// Return private container
+func (m *Snippetbox) WithPrivateContainer(
+	// full private image uri
+	uri string,
+	// registry uri
+	address string,
+	// registry username
+	username string,
+	// registry password
+	token *dagger.Secret,
+) *dagger.Container {
+	return dag.
+		Container().
+		WithRegistryAuth(address, username, token).
+		From(uri)
+}
+
+// Publish and reset auth
+func (m *Snippetbox) PublishAndResetAuth(
+	ctx context.Context,
+	// full private image uri
+	uri string,
+	// registry uri
+	address string,
+	// registry username
+	username string,
+	// registry password
+	token *dagger.Secret,
+	// directory with Dockerfile
+	src *dagger.Directory,
+) (string, error) {
+	// auth with registry
+	dag.Container().WithRegistryAuth(address, username, token).Sync(ctx)
+
+	// build and publish
+	out, err := src.DockerBuild().Publish(ctx, uri)
+	if err != nil {
+		return "", fmt.Errorf("failed to publish: %w", err)
+	}
+
+	// try to pull from private image (should succeed)
+	workingPrivateOut, err := dag.Container().From(uri).WithExec([]string{"echo", "hello from working private image"}).Stdout(ctx)
+
+	if err != nil {
+		return "", fmt.Errorf("failed to pull private image: %w", err)
+	}
+
+	out += workingPrivateOut
+
+	// reset auth
+	dag.Container().WithRegistryAuth(address, "username", dag.SetSecret("nonsense", "nonsense")).Sync(ctx)
+
+	// try to pull from private image (should fail)
+	nonWorkingPrivateOut, err := dag.Container().From(uri).WithExec([]string{"echo", "hello from nonworking private image"}).Stdout(ctx)
+
+	if err != nil {
+		return "", fmt.Errorf("failed to pull private image: %w", err)
+	}
+	out += nonWorkingPrivateOut
+
+	return out, nil
+}
+
+// Publish and reset auth test using push
+func (m *Snippetbox) PublishAndResetAuthTest(
+	ctx context.Context,
+	// full private image uri
+	uri string,
+	// registry uri
+	address string,
+	// registry username
+	username string,
+	// registry password
+	token *dagger.Secret,
+	// directory with Dockerfile
+	src *dagger.Directory,
+) (string, error) {
+	// auth with registry
+	dag.Container().WithRegistryAuth(address, username, token).Sync(ctx)
+
+	// build and publish with creds
+	out, err := src.DockerBuild().Publish(ctx, uri)
+	if err != nil {
+		return "", fmt.Errorf("failed to publish: %w", err)
+	}
+
+	// does not seem to actually reset auth, old auth is being cached and resued
+	dag.Container().WithoutRegistryAuth(address).Sync(ctx)
+
+	// dag.Container().WithRegistryAuth(address, username, dag.SetSecret("token", "reset")).Sync(ctx)
+
+	// build and publish without creds
+	withOut, err := src.WithNewFile("hi.txt", "hello").DockerBuild().Publish(ctx, uri)
+	if err != nil {
+		return "", fmt.Errorf("failed to publish: %w", err)
+	}
+
+	out += withOut
+
+	return out, nil
+}
