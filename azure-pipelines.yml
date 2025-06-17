@@ -16,10 +16,10 @@ steps:
 - checkout: self
   fetchDepth: 0
   displayName: 'Checkout Source Code, fetch full history'
-- script: curl -L https://dl.dagger.io/dagger/install.sh | BIN_DIR=$HOME/.local/bin sh
-  displayName: 'Install Dagger CLI'
 - script: git checkout $(Build.SourceBranchName)
   displayName: 'Checkout Source Branch'
+- script: curl -L https://dl.dagger.io/dagger/install.sh | BIN_DIR=$HOME/.local/bin sh
+  displayName: 'Install Dagger CLI'
 - script: dagger call ci
   displayName: 'Call Dagger Function'
   env:
