@@ -16,7 +16,7 @@ jobs:
           when: always
       - run:
           name: run tests
-          command: dagger call ci
+          command: dagger call test
           when: always
       - run:
           name: publish to docker
