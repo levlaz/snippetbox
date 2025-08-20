@@ -13,9 +13,12 @@ jobs:
       - run:
           name: lint code
           command: dagger call lint
+          when: always
       - run:
           name: run tests
           command: dagger call ci
+          when: always
       - run:
           name: publish to docker
           command: dagger call publish
+          when: always
