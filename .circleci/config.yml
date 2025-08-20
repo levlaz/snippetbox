@@ -11,5 +11,11 @@ jobs:
           name: Install Dagger CLI
           command: cd /usr/local && { curl -L https://dl.dagger.io/dagger/install.sh | sudo -E sh; cd -; }
       - run:
-          name: Run CI pipeline
+          name: lint code
+          command: dagger call lint
+      - run:
+          name: run tests
           command: dagger call ci
+      - run:
+          name: publish to docker
+          command: dagger call publish
