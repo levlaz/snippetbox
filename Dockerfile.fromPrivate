@@ -1,7 +1,0 @@
-FROM levlaz/private-sample
-
-RUN apt update && \
-    apt install -y \
-    curl \
-    wget \
-    vim 
