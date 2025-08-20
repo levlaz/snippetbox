@@ -10,18 +10,6 @@ jobs:
       - run:
           name: Install Dagger CLI
           command: cd /usr/local && { curl -L https://dl.dagger.io/dagger/install.sh | sudo -E sh; cd -; }
-      # - run:
-      #     # adding this step to test out how long it takes to pull the dagger image
-      #     name: Pull Dagger Image & Run Core
-      #     command: dagger core --progress=plain
-      # - run:
-      #     # adding this step to test out how long it takes to call functions the first time with installing module
-      #     name: Call Functions First Time
-      #     command: dagger functions --progress=plain
-      # - run:
-      #     # adding this step to test out how long it takes to call functions the second time
-      #     name: Call Functions Second Time
-      #     command: dagger functions --progress=plain
       - run:
           name: Run CI pipeline
-          command: dagger call ci --progress=plain
+          command: dagger call ci

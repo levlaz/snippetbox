@@ -1,7 +1,9 @@
 {
   "name": "snippetbox",
-  "engineVersion": "v0.15.1",
-  "sdk": "go",
+  "engineVersion": "v0.18.16",
+  "sdk": {
+    "source": "go"
+  },
   "dependencies": [
     {
       "name": "dragonfly",
