@@ -1,17 +1,18 @@
 name: dagger
 on:
   push:
-    branches: [main]
+    branches: [*]
 
 jobs:
   build:
     name: build
     runs-on: ubuntu-latest
+    environment: release
     steps:
       - uses: actions/checkout@v3
-      - name: Install Dagger CLI
-        run: cd /usr/local && { curl -L https://dl.dagger.io/dagger/install.sh | sh; cd -; }
-      - name: Run CI pipeline
-        run: dagger call ci --commit $GITHUB_SHA
-        env:
-          DAGGER_CLOUD_TOKEN: ${{ secrets.DAGGER_CLOUD_TOKEN }}
+      - name: build release
+      	uses: dagger/dagger-for-github@8.0.0
+	with:
+		version: "latest"
+		args: ci 
+		cloud-token: ${{ secrets.DAGGER_CLOUD_TOKEN }}
