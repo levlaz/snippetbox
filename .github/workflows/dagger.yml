@@ -1,7 +1,7 @@
 name: dagger
 on:
   push:
-    branches: [*]
+    branches: ['*']
 
 jobs:
   build:
