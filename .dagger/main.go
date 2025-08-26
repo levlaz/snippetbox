@@ -190,7 +190,7 @@ func (m *Snippetbox) Debug(
 	database *dagger.Service,
 ) *dagger.Container {
 	if database == nil {
-		database = dag.Mariadb().Serve()
+		database = dag.Mariadb().Debug()
 	}
 	return m.base().
 		WithServiceBinding("db", database).
