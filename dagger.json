@@ -12,8 +12,7 @@
     },
     {
       "name": "mariadb",
-      "source": "github.com/levlaz/daggerverse/mariadb@cb25b8fb580c6df6f3a68da649dcfd90a67048e4",
-      "pin": "cb25b8fb580c6df6f3a68da649dcfd90a67048e4"
+      "source": "github.com/levlaz/daggerverse/mariadb@v0.3.0"
     }
   ],
   "source": ".dagger"
